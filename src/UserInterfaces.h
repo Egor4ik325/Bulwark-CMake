@@ -1,0 +1,12 @@
+#pragma once
+
+////////////////////////////////////////////////////////////
+// Headers
+////////////////////////////////////////////////////////////
+
+#include "UIBase.h"
+#include "UIDragable.h"
+#include "UIWindow.h"
+#include "UIButton.h"
+#include "UIScreen.h"
+#include "UIManager.h"
