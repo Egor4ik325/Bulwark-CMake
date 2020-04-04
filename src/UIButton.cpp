@@ -6,14 +6,13 @@
 
 UIButton::UIButton(UIScreen* screenParent) : UIDragable(screenParent)
 {
-	// Name
-	name = "UIButton";
+	// Properties
 	setFillColor(sf::Color::White);
 	setPosition(100.f, 100.f);
 	setSize(sf::Vector2f(200.f, 100.f));
 	setOutlineThickness(10.f);
 	setOutlineColor(sf::Color::Black);
-
+    // Text
 	text.setFillColor(sf::Color::Black);
 	text.setPosition(0, 0);
 	text.setString("");
@@ -83,4 +82,8 @@ void UIButton::drawText(sf::RenderTarget& target)
 
 	text.setPosition(textPos);
 	target.draw(text);
+}
+
+const char *UIButton::getName() const {
+    return "UIButton";
 }

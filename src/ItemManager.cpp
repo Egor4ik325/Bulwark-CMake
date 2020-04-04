@@ -7,16 +7,16 @@ ItemInfo ItemManager::itemInfoArr[];
 
 void ItemManager::deleteItem(Item * item)
 {
-	// Удаляем из динам памяти
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	delete item;
 
-	// Удаляем из списка
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	for (int i = 0; i < items.size(); i++)
 	{
 		if (items[i] == item)
 		{
-			// Удаляем из списка
-			std::vector <Item*>::iterator iter = items.begin();
+			// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+			auto iter = items.begin();
 			std::advance(iter, i);
 			items.erase(iter);
 		}

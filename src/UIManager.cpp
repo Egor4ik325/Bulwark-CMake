@@ -5,8 +5,8 @@
 
 std::vector <UIScreen*> UIManager::screens;
 
-UIBase* UIManager::overAll = nullptr;
-UIBase* UIManager::dragAll = nullptr;
+//UIBase* UIManager::overAll = nullptr;
+//UIBase* UIManager::dragAll = nullptr;
 
 void UIManager::update()
 {
@@ -17,10 +17,9 @@ void UIManager::update()
 		if (!screen->visible) continue;
 	
 		screen->update();
-		// Выводим одни общие указатели на *Drag и *Over
-		dragAll = screen->drag;
-		overAll = screen->over;
-
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ *Drag пїЅ *Over
+		//dragAll = screen->drag;
+		//overAll = screen->over;
 	}	
 }
 
@@ -44,13 +43,11 @@ UIBase* UIManager::getMouseOver()
 	for (UIScreen* screen : screens)
 	{
 		if (!screen->visible) continue;
-		
-		if (screen->over != nullptr)
-		{
-				over = screen->over;
-		}
-		
+		if (screen->over == nullptr) continue;
+
+		over = screen->over;
 	}
+
 	return over;
 }
 
@@ -59,13 +56,10 @@ UIBase* UIManager::getMouseDrag()
 	UIBase* drag = nullptr;
 	for (UIScreen* screen : screens)
 	{
-		if (screen->visible)
-		{
-			if (screen->drag != nullptr)
-			{
-				drag = screen->over;
-			}
-		}
+		if (!screen->visible) continue;
+		if (screen->drag == nullptr) continue;
+
+		drag = screen->over;
 	}
 	return drag;
 }
@@ -75,22 +69,15 @@ void UIManager::addScreen(UIScreen * uiscreen)
 	screens.push_back(uiscreen);
 }
 
-void UIManager::addScreen(UIScreen & screen)
-{
-	screens.push_back(&screen);
-}
-
 void UIManager::deleteScreen(unsigned int index)
 {
 	if (index > screens.size()) return;
 
-	//// Удаляем из динамической памяти
-	//UIScreen* screen = screens[index];
-	//screen->deleteControls();
-	//delete screens[index];
+	// free memory
+	delete screens[index];
 
-	// Удаляем из списка
-	std::vector <UIScreen*>::iterator iter = screens.begin();
+	// remove from vector
+	auto iter = screens.begin();
 	std::advance(iter, index);
 	screens.erase(iter);
 }
@@ -99,17 +86,11 @@ void UIManager::deleteScreen(const UIScreen * screen)
 {
 	for (int i = 0; i < screens.size(); i++)
 	{
-		if (&screen[i] == screen)
+		if (screens[i] == screen)
 		{
 			deleteScreen(i);
-			return;
 		}
 	}
-}
-
-void UIManager::deleteScreen(const UIScreen & screen)
-{
-	deleteScreen(&screen);
 }
 
 UIScreen * UIManager::getScreen(unsigned int index)

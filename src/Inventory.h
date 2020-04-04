@@ -6,14 +6,14 @@
 
 class Inventory : public UIWindow
 {
-protected:	
+protected:
 	std::vector <InventoryCell*> cells;
     unsigned int cellCount;
 	
 public:
 	unsigned int selectedCell;
 
-	Inventory(UIScreen* screenParent = nullptr);
+	explicit Inventory(UIScreen* screenParent = nullptr);
 
 	void update() override;
 	void createCells();
@@ -23,7 +23,9 @@ public:
 	InventoryCell* getFirstEmptyCell();
 	InventoryCell* getSelectedCell();
 
-	~Inventory();
+
+    const char *getName() const override;
+
 protected:
-	void addCell();
+	void createCell();
 };

@@ -5,8 +5,6 @@
 
 UIWindow::UIWindow(UIScreen* screenParent): UIDragable(screenParent)
 {
-	// Name
-	name = "UIWindow";
 	// Window
 	visible = true;
 	dragAble = true;
@@ -60,4 +58,8 @@ void UIWindow::applyColors()
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left) && screenParent->drag == this)
 		title.setFillColor(sf::Color::Red);
+}
+
+const char *UIWindow::getName() const {
+    return "UIWindow";
 }

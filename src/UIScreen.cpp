@@ -23,28 +23,22 @@ void UIScreen::update()
 void UIScreen::updateDrag()
 {
 	// ���� ��������� ��������� - (������ ���� ���������)
-	if (drag != nullptr)
+	if (drag == nullptr) return;
+
+	// Dragging
+	if (drag->isDragAllow())
 	{
-		// ���� ��� ��� ���������
-		if (drag->isDragAllow())
-		{
-			// �������� �� ������� ���� ���������� ������� ������ ���� ����� UI � �����,
-			// � �������� ��������� ����������
-			sf::Vector2f nextPos = getMouseLocalPos() - drag->getDragOffSet();
-			drag->setPosition(nextPos);
-		}
-		// ���� ��� �� ���������
-		else
-		{
-			// ���� ��� �������� ���-�� ����
-			if (over != nullptr)
-				drag->onDrop();
-			else
-				drag->onCancelDrag();
-	
-			// ���������
-			drag = nullptr;
-		}
+	    // �������� �� ������� ���� ���������� ������� ������ ���� ����� UI � �����,
+	    // � �������� ��������� ����������
+	    sf::Vector2f nextPos = getMouseLocalPos() - drag->getDragOffSet();
+	    drag->setPosition(nextPos);
+	}
+	// Stop dragging
+	else{
+	    // UI drop method
+	    drag->onDrop();
+	    // Zero
+	    drag = nullptr;
 	}
 }
 
@@ -62,49 +56,53 @@ void UIScreen::addControl(UIDragable* control)
 	controls.push_back(control); // ��������� UI � ������
 }
 
-void UIScreen::addControl(UIDragable& control)
-{
-	control.setScreenParent(this);
-	controls.push_back(&control);
-}
+//void UIScreen::addControl(UIDragable& control)
+//{
+//	control.setScreenParent(this);
+//	controls.push_back(&control);
+//}
 
 void UIScreen::deleteControl(unsigned int index)
 {
 	if (index > controls.size()) return;
 
-	//// ������� �� ������������ ������
-	//delete controls[index];       
+	// free memory
+	delete controls[index];
 
-	// ������� �� ������
-	std::vector <UIBase*>::iterator iter = controls.begin();
+	// remove from vector
+	auto iter = controls.begin();
 	std::advance(iter, index);
 	controls.erase(iter);        
 }
 
-void UIScreen::deleteControls()
-{
-	//for (UIBase* c : controls)
-	//{
-	//	delete c;
-	//}
-	controls.clear();
-}
-
 bool UIScreen::mouseIntersect()
 {
-	bool intersect = false;
 	for (UIBase* c : controls)
 	{
 		if (c->getGlobalBounds().contains(getMouseLocalPos()))
 		{
-			intersect = true;
-			break;
+			return true;
 		}
 	}
-
-	return intersect;
+	return false;
 }
 
-UIScreen::~UIScreen()
-{
+UIScreen::~UIScreen() {
+    // free memory
+    for (UIBase *c : controls)
+    {
+        delete c;
+    }
+}
+
+UIBase *UIScreen::getOver() {
+
+    UIBase* _over = nullptr;
+    for(UIBase* c : controls)
+    {
+        if(c->getGlobalBounds().contains(getMouseLocalPos()))
+            _over = c;
+    }
+
+    return _over;
 }

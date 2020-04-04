@@ -9,20 +9,25 @@ class UIItem;
 class InventoryCell : public UIDragable
 {
 public:
-	UIItem* itemContain;
-
 	Inventory* invParent;
-	
+	UIItem* uiItem;
+
 	sf::Color selectedColor;
 public:
-	InventoryCell(Inventory* inventoryParent);
+	explicit InventoryCell(Inventory* inventoryParent);
 
 	void update() override;
 	void draw(sf::RenderTarget& target) override;
 
-	void removeItem();
 	bool isEmpty();
-	void setItem(UIItem* item);
+
+	void addChild(UIBase* child) override;
+	void removeChild(UIBase* address) override;
+
+	//void setItem(UIItem* item);
+	void removeItem();
 	UIItem* getItem();
+
+    const char *getName() const override;
 };
 

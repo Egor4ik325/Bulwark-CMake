@@ -9,19 +9,19 @@
 class UIItem : public UIDragable
 {
 public:
-	UIItem(Item item);									   // Конструктор Item
-	UIItem(UIScreen* screenParent);						   // Конструктор UI
-	UIItem(const sf::Texture& texture, sf::IntRect rect);  // Конструктор Item
+	explicit UIItem(Item item);									   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Item
+	explicit UIItem(UIScreen* screenParent);						   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI
+	explicit UIItem(const sf::Texture& texture, sf::IntRect rect);  // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Item
+	explicit UIItem(Item* item);									   // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Item
 
-	UIItem(Item* item);									   // Конструктор Item
+	void draw(sf::RenderTarget& target) override;
+	void update() override;
 
-	virtual void draw(sf::RenderTarget& target) override;
-	virtual void update() override;
+	void onDragBegin() override;
+	void onDrop() override;
+	void onCancelDrag() override;
 
-	virtual void onDragBegin() override;
-	virtual void onDrop() override;
-	virtual void onCancelDrag() override;
-
+    const char *getName() const override;
 
 public:
 	Item item;

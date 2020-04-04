@@ -2,17 +2,9 @@
 #include "Global.h"
 
 UIBase::UIBase(UIScreen * screenParent) :
+    visible(true),
+    parent(nullptr),
 	screenParent(screenParent)
-{
-}
-
-//void UIBase::updateChildren()
-//{
-//	for (UIBase* c : childs)
-//		c->update();
-//}
-
-void UIBase::update()
 {
 }
 
@@ -22,29 +14,11 @@ void UIBase::draw(sf::RenderTarget & target)
 	{
 		target.draw(*this, getViewTransformOffSet());
 	}
-
-	//drawChildren(target);
 }
-
-//void UIBase::drawChildren(sf::RenderTarget & target)
-//{
-//	for (UIBase* c : childs)
-//		c->draw(target);
-//}
 
 void UIBase::setScreenParent(UIScreen * screenParent)
 {
 	this->screenParent = screenParent;
-}
-
-void UIBase::setScreenParent(UIScreen & screenParent)
-{
-	this->screenParent = &screenParent;
-}
-
-const std::string & UIBase::getName() const
-{
-	return name;
 }
 
 void UIBase::setParent(UIBase * parent)
@@ -52,15 +26,38 @@ void UIBase::setParent(UIBase * parent)
 	this->parent = parent;
 }
 
-void UIBase::setChild(UIBase * child)
+void UIBase::addChild(UIBase *child)
 {
-	this->child = child;
+    // set this as parent
+    child->setParent(this);
+    childs.push_back(child);
 }
 
-UIBase * UIBase::getChild()
+void UIBase::removeChild(UIBase *child)
 {
-	return child;
+    for (int i = 0; i < childs.size(); ++i)
+    {
+        if(childs[i] == child)
+        {
+            // remove from vector
+            auto iter = childs.begin();
+            std::advance(iter, i);
+            childs.erase(iter);
+        }
+    }
 }
+//void UIBase::draw(sf::RenderTarget &target, sf::RenderStates states) const {
+//
+//    states.transform *= getTransform(); // getTransform() is defined by sf::Transformable
+//
+//    // apply the texture
+//    states.texture = &m_texture;
+//
+//    // you may also override states.shader or states.blendMode if you want
+//
+//    // draw the vertex array
+//    target.draw(m_vertices, states);
+//}
 
 //UIBase::~UIBase()
 //{

@@ -15,12 +15,14 @@ protected:
 	sf::Color titleDragColor;
 
 	void applyColors();
-public:
 
-	UIWindow(UIScreen* screenParent = nullptr);
+public:
+	explicit UIWindow(UIScreen* screenParent = nullptr);
 
 	void update() override;
 	void draw(sf::RenderTarget & target) override;
 
-	bool isDragAllow() const override;
+    const char *getName() const override;
+
+    bool isDragAllow() const override;
 };

@@ -2,21 +2,30 @@
 #include <SFML/Graphics.hpp>
 #include "Player.h"
 #include "TileMap.h"
-#include "UserInterfaces.h"
+#include "UIs.h"
 
+///////////////////////////////////////
+///  Just an application class
+///  It will handle everything
+///////////////////////////////////////
 class Bulwark
 {
 private:
+    // Player
 	Player player;
+    // Game map
 	TileMap map;
+	// Current view
 	sf::View view;
-	sf::Clock clock; float time{};
+	// Elapsed time
+	sf::Clock clock;
+	float time{};
 	//std::list <Effect> Effects;  Manager
 
 	// UI
-	UIScreen menuScreen, gameScreen;
-	UIWindow win;
-	UIButton start, quit;
+	UIScreen* menuScreen, *gameScreen;
+	UIWindow* win;
+	UIButton* start, *quit;
 	
 	bool gamePlay;
 public:
@@ -32,7 +41,7 @@ public:
 
 	bool isGamePlay() const;
 private:
-	void addUI();
+	void createUI();
 	static void drawText(const char* text, float data, sf::Vector2i position, const char* count = "%.4f");
 };
 

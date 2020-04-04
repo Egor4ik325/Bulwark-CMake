@@ -17,8 +17,8 @@ protected:
 	sf::Vector2f dragOffset;
 public:
 
-	// Унаследовано через UIBase
-	virtual void update() override;
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ UIBase
+	void update() override;
 
 	virtual void onDragBegin();	      
 	virtual void onDrop();		      
@@ -36,7 +36,7 @@ public:
 //	bool dragAble;
 //	sf::Vector2f dragOffset;
 //public:
-//	// Без родителя UI НЕ РАБОТАЕТ
+//	// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 //	UIScreen* screenParent;
 //public:
 //

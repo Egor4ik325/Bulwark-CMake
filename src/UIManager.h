@@ -5,30 +5,30 @@
 
 class UIDragable;
 
-// Вспомогательный cтатический класс, хранящий UI и помагающий взаимодействовать с ними 
-// Он будет доступен для всех классов
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ cпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ 
+// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 class UIManager
 {
 private:
-	static std::vector<UIScreen*> screens;     // Храним все возможные экраны UI
+	static std::vector<UIScreen*> screens;     // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ UI
 
-	static UIBase* overAll, *dragAll;
+	//static UIBase* overAll, *dragAll;
 public:				 
 
-	static void update();						 // Обновляем активные UI экраны
-    static void draw(sf::RenderTarget &target);  // Рисуем активные UI экраны
+	static void update();						 // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI пїЅпїЅпїЅпїЅпїЅпїЅ
+    static void draw(sf::RenderTarget &target);  // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI пїЅпїЅпїЅпїЅпїЅпїЅ
 
 	static UIBase* getMouseOver();
 	static UIBase* getMouseDrag();
 
-	// Передаем адрес Screen созданного в динамической памяти
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ Screen пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	static void addScreen(UIScreen* screen);
-	static void addScreen(UIScreen& screen);
+	//static void addScreen(UIScreen& screen);
 
-	// Удаляем Screen
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Screen
 	static void deleteScreen(unsigned int index);
 	static void deleteScreen(const UIScreen* screen);
-	static void deleteScreen(const UIScreen& screen);
+	//static void deleteScreen(const UIScreen& screen);
 
 	static UIScreen* getScreen(unsigned int index);
 private:

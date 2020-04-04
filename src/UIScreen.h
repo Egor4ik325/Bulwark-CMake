@@ -2,27 +2,27 @@
 #include "SFML/Graphics.hpp"
 #include "UIDragable.h"
 
-// Экран - массив интерфейсов
+// пїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 class UIScreen
 {
 public:
-	bool visible = false;
-
-	std::vector <UIBase*> controls; // Адреса UI из статик. памяти Stack/Heap
+	std::vector <UIBase*> controls; // пїЅпїЅпїЅпїЅпїЅпїЅ UI пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅ Heap
 	UIDragable* over, *drag;
+
 public:
+	bool visible = false;
 
 	UIScreen();
 
 	void update();
 	void draw(sf::RenderTarget &target);
 
-	// Передаем UI для добавления в Managment
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ UI пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ Managment
 	void addControl(UIDragable* control);
-	void addControl(UIDragable& control);
 	void deleteControl(unsigned int index);
-	void deleteControls();
 	bool mouseIntersect();
+
+	UIBase* getOver();
 
 	~UIScreen();
 private:

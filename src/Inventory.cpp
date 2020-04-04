@@ -6,10 +6,9 @@
 #include "Item.h"
 #include "InventoryCell.h"
 
-Inventory::Inventory(UIScreen* screenParent) : UIWindow(screenParent)
+Inventory::Inventory(UIScreen* screenParent) : UIWindow(screenParent),
+    cellCount(0)
 {
-	// Name
-	name = "Inventory";
 	dragAble = true;
 	titleVisible = false;
 	bodyColor = sf::Color(256, 256, 256, 100);
@@ -25,12 +24,12 @@ void Inventory::createCells()
 	cellCount = 5;
 	setSize(sf::Vector2f(cellCount * 64 + 64, 64));
 	for (int i = 0; i < cellCount; i++)
-		addCell();
+        createCell();
 }
 
-void Inventory::addCell()
+void Inventory::createCell()
 {
-	InventoryCell* cell = new InventoryCell(this);
+	auto* cell = new InventoryCell(this);
 	cell->setPosition(cells.size() * cell->getSize().x, 0);
 	screenParent->addControl(cell);
 
@@ -82,17 +81,14 @@ InventoryCell * Inventory::getSelectedCell()
 	return getCell(selectedCell);
 }
 
-Inventory::~Inventory()
-{
-	for (InventoryCell* c : cells)
-		delete c;
-	cells.clear();
-}
-
 InventoryCell* Inventory::getCell(unsigned int index)
 {
 	if (index > cells.size())
 		return nullptr;
 
 	return cells[index];
+}
+
+const char *Inventory::getName() const {
+    return "Inventory";
 }

@@ -4,18 +4,15 @@
 #include "Content.h"
 #include "Inventory.h"
 
-InventoryCell::InventoryCell(Inventory* inv) : UIDragable(inv->screenParent)
+InventoryCell::InventoryCell(Inventory* inv) : UIDragable(inv->screenParent),
+    invParent(inv),
+    uiItem(nullptr),
+    selectedColor(sf::Color::Black)
 {
-	// Name
-	name = "InventoryCell";
-	// Запоминаем родителя
-	this->invParent = inv;
-	screenParent = invParent->screenParent;
-	// Хранимый предмет
-	itemContain = nullptr;
+	// Properties
+	screenParent = inv->screenParent;
 	dragAble = false;
-	selectedColor = sf::Color::Black;
-	// Устанавливаем текстуру
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
 	setTexture(&ContentManager::invCellTexture, true);
 	setTextureRect(sf::IntRect(0, 0, 16, 16));
@@ -23,10 +20,10 @@ InventoryCell::InventoryCell(Inventory* inv) : UIDragable(inv->screenParent)
 
 void InventoryCell::update()
 {
-	if (itemContain != nullptr && !itemContain->isDragAllow())
+	if (uiItem != nullptr && !uiItem->isDragAllow())
 	{
-		// Двигаем Item внутри
-		itemContain->setPosition(getPosition());
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ Item пїЅпїЅпїЅпїЅпїЅпїЅ
+		uiItem->setPosition(getPosition());
 	}
 	UIDragable::update();
 }
@@ -41,25 +38,55 @@ void InventoryCell::draw(sf::RenderTarget & target)
 	UIDragable::draw(target);
 }
 
-void InventoryCell::setItem(UIItem * item)
+//void InventoryCell::setItem(UIItem * item)
+//{
+//    uiItem = item;
+//	uiItem->setParent(this);
+//    uiItem->item.onGround = false;
+//	uiItem->setPosition(getPosition());
+//	// add to childs
+//	addChild(uiItem);
+//}
+
+
+void InventoryCell::addChild(UIBase *child)
 {
-	itemContain = item;
-	itemContain->setParent(this);
-	itemContain->item.onGround = false;
-	itemContain->setPosition(getPosition());
+    UIBase::addChild(child);
+
+    if(child->getName() == "UIItem")
+    {
+        auto* item = (UIItem*) child;
+        uiItem = item;
+    }
+}
+
+void InventoryCell::removeChild(UIBase *child)
+{
+    UIBase::removeChild(child);
+
+    if(child->getName() == "UIItem")
+    {
+        uiItem = nullptr;
+    }
 }
 
 void InventoryCell::removeItem()
 {
-	itemContain = nullptr;
-}
-
-bool InventoryCell::isEmpty()
-{
-	return itemContain == nullptr;
+    // remove from childs
+    removeChild(uiItem);
+    uiItem = nullptr;
 }
 
 UIItem * InventoryCell::getItem()
 {
-	return itemContain;
+	return uiItem;
+}
+
+bool InventoryCell::isEmpty()
+{
+	return uiItem == nullptr;
+}
+
+const char *InventoryCell::getName() const {
+    return "InventoryCell";
 }

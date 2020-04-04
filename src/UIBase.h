@@ -5,6 +5,16 @@
 
 class UIScreen;
 
+//enum UIType
+//{
+//    None = 0,
+//    UIWindowType,
+//    UIButtonType,
+//    UIItemType,
+//    InventoryType,
+//    InventoryCellType
+//};
+
 ////////////////////////////////////////////////////////////
 /// \brief Abstract base class for UI includes {UIDrawable, UITransformable}
 ///
@@ -12,35 +22,36 @@ class UIScreen;
 class UIBase : public sf::RectangleShape
 {
 protected:
-	//UIBase() = default; // Default protected contructor means - abstract class - can not be created
-	
-	UIBase(UIScreen* screenParent); 
+    explicit UIBase(UIScreen* screenParent); // protected constructor - class can not be created
 
-	std::string name;
+
+
 	bool visible;
 
 	UIBase* parent;
-	UIBase* child;
-	//// Дети будет храниться в динамической памяти
-	//std::vector<UIBase*> childs;
+	//UIBase* child;
+	// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+	std::vector<UIBase*> childs;
 
 public:
-	UIScreen* screenParent; // Родитель
+	UIScreen* screenParent; // Screen, on which it draws
 
 public:
-
-	virtual void update();
-	//void updateChildren();
-
+	virtual void update() = 0;
 	virtual void draw(sf::RenderTarget& target);
-	//void drawChildren(sf::RenderTarget& target);
+    //void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	void setScreenParent(UIScreen* screenParent);
-	void setScreenParent(UIScreen& screenParent);
-	const std::string& getName() const;
 
-	void setParent(UIBase* parent);
-	void setChild(UIBase* child);
+	virtual const char* getName() const = 0;
+	//virtual UIType getType() const = 0;
 
-	UIBase* getChild();
+	virtual void setParent(UIBase* parent);
+	virtual void addChild(UIBase* child);
+	virtual void removeChild(UIBase* adress);
+
+	// Events
+	virtual void onMouseOver() {};
+	virtual void onMouseButtonPressed() {};
+
 };

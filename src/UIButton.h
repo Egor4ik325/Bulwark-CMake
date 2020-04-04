@@ -9,13 +9,16 @@ protected:
 	sf::Color color;
 
 public:
-	// Когда вызывается конструктор по умолчанию, мы обещаем в дальнейшем передать родителя, без родителя не работаем
-	UIButton(UIScreen* screenParent = nullptr);
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	explicit UIButton(UIScreen* screenParent = nullptr);
 	//UIButton(const std::string& text, const sf::Color& color, const sf::Font& font);
 
 	void draw(sf::RenderTarget & target) override;
 
 	void setColor(const sf::Color& color);
+
+    const char *getName() const override;
+
 protected:
 
 	void drawText(sf::RenderTarget& target);

@@ -8,7 +8,7 @@
 #include "UIItem.h"
 #include <cmath>
 
-Player::Player()
+Player::Player(): inventory(nullptr)
 {
 	// Properties
 	position = sf::Vector2f(13 * TILE_SIZE, 11 * TILE_SIZE);
@@ -645,7 +645,7 @@ void Player::pickUp()
 	if (item->onGround == false)
 		return;
 
-	InventoryCell* cell = inventory.getFirstEmptyCell();
+	InventoryCell* cell = inventory->getFirstEmptyCell();
 	if (cell == nullptr)
 		return;
 	
@@ -654,7 +654,7 @@ void Player::pickUp()
 	// ���� ������� �������� Item (������� �� ������� �� ����������)
 	ItemManager::deleteItem(item);
 
-	cell->setItem(uiItem);
+	cell->addChild(uiItem);
 }
 
 void Player::dropUp(InventoryCell * cell)
@@ -711,7 +711,7 @@ sf::Vector2i Player::getMiddleTilePos() const
 
 sf::Vector2f Player::getMiddlePos() const
 {
-	sf::Vector2f tileSizeHalf(TILE_SIZE / 2, TILE_SIZE / 2);
+	sf::Vector2f tileSizeHalf(TILE_SIZE / 2.f, TILE_SIZE / 2.f);
 	return position + tileSizeHalf;
 }
 

@@ -2,19 +2,16 @@
 #include "InventoryCell.h"
 #include "UIManager.h"
 
-UIItem::UIItem(UIScreen* screenParent) : UIDragable(screenParent)
+UIItem::UIItem(UIScreen* screenParent) : UIDragable(screenParent),
+    item(Item())
 {
 	dragAble = true;
-	// Name
-	name = "UIItem";
 }
 
 UIItem::UIItem(const sf::Texture& texture, sf::IntRect rect) : UIDragable(nullptr),
 	item(Item(texture, rect))
 {
 	dragAble = true;
-	// Name
-	name = "UIItem";
 }
 
 UIItem::UIItem(Item * item) : UIItem(*item)
@@ -26,8 +23,6 @@ UIItem::UIItem(Item item) : UIDragable(nullptr),
 item(item)
 {
 	dragAble = true;
-	// Name
-	name = "UIItem";
 }
 
 void UIItem::draw(sf::RenderTarget & target)
@@ -44,39 +39,42 @@ void UIItem::update()
 	item.setPosition(getPosition());
 }
 
-void UIItem::onDragBegin()
-{
-	if (parent->getName() == "InventoryCell")
-	{
-		InventoryCell* cellParent = (InventoryCell*)parent;
-
-		cellParent->removeItem();
-	}
+void UIItem::onDragBegin() {
+    //if (parent->getName() == "InventoryCell")
+    //{
+    //	InventoryCell* cellParent = (InventoryCell*)parent;
+    //	cellParent->removeItem();
+    //}
+    if (parent != nullptr) {
+        parent->removeChild(this);
+    }
 }
 
 void UIItem::onDrop()
 {
 	UIBase* over = screenParent->over;
-
-	if (over->getName() == "InventoryCell")
+	if(strcmp(over->getName(), "InventoryCell") != 0) // TODO remove in future
 	{
-		InventoryCell* cell = (InventoryCell*)over;
-
-		parent = cell;
-
-		cell->setItem(this);
+	    parent = over;
+        over->addChild(this);
+    } else{
+	    onCancelDrag();
 	}
-
 }
 
 void UIItem::onCancelDrag()
 {
-	if (parent->getName() == "InventoryCell")
-	{
-		InventoryCell* cellParent = (InventoryCell*)parent;
-
-		cellParent->setItem(this);
+	//if (parent->getName() == "InventoryCell")
+	//{
+	//	InventoryCell* cellParent = (InventoryCell*)parent;
+    //
+	//	cellParent->setItem(this);
+	//}
+	if(parent != nullptr){
+	    parent->addChild(this);
 	}
 }
 
-
+const char *UIItem::getName() const {
+    return "UIItem";
+}
