@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "UIDragable.h"
+#include "UI/UIDragable.h"
 
 
 class Inventory;
@@ -16,8 +16,8 @@ public:
 public:
 	explicit InventoryCell(Inventory* inventoryParent);
 
-	void update() override;
-	void draw(sf::RenderTarget& target) override;
+	void onUpdate() override;
+	void onDraw(sf::RenderWindow &target) override;
 
 	bool isEmpty();
 
@@ -28,6 +28,6 @@ public:
 	void removeItem();
 	UIItem* getItem();
 
-    const char *getName() const override;
+    inline const char *getName() const override { return "InventoryCell"; }
 };
 

@@ -2,88 +2,120 @@
 #include "Content.h"
 #include "Global.h"
 #include "DebugRect.h"
-#include "ItemManager.h"
-#include "UIItem.h"
+#include "Item/ItemLayer.h"
+#include "UI/UIItem.h"
 #include <cstdio>
 
-Bulwark::Bulwark() : time(0.f),
-    menuScreen(nullptr), gameScreen(nullptr), win(nullptr), start(nullptr), quit(nullptr)
+Bulwark::Bulwark() :
+    time(0.f),
+    menuLayer(nullptr), gameLayer(nullptr), win(nullptr), start(nullptr), quit(nullptr),
+    itemLayer(nullptr),
+    WIDTH(1024), HEIGHT(640),
+    stack(window)
 {
 	// Menu
 	gamePlay = false;
-	// TileMap
-	map.loadFromFile(ContentManager::CONTENT_DIR + "Map.tmx");   // ����� 30x30
+	// RenderWindow
+    window.create(sf::VideoMode(WIDTH, HEIGHT), "Bulwark", sf::Style::Default);
+    window.setPosition(sf::Vector2i(256, 100));
+    window.setVerticalSyncEnabled(true);  // VSYNC
+#if BW_DEBUG
+    window.setFramerateLimit(10);           // Only for debugging
+#endif
+    // Cursor
+    window.setMouseCursorVisible(true);
+    window.setMouseCursorGrabbed(false);
+    sf::Cursor cursor; cursor.loadFromSystem(sf::Cursor::Arrow);
+    window.setMouseCursor(cursor);
+    //system("help");
+
+    // TileMap
+	map.loadFromFile(Content::CONTENT_DIR + "Map.tmx");   // ����� 30x30
 	map.setTileSize(TILE_SIZE);
-	map.setTileType(3, TileMap::WALL); map.setTileType(5, TileMap::WALL); map.setTileType(10, TileMap::WALL);
+	// Define wall ids
+	map.setTileType(3, TileMap::WALL);
+	map.setTileType(5, TileMap::WALL);
+	map.setTileType(10, TileMap::WALL);
 
 	// View
 	view.reset(sf::FloatRect(0.0f, 0.0f, WIDTH, HEIGHT));
 	//view.setViewport(FloatRect(0.0f, 0.0f, 0.5f, 0.5f)); // ������� ����
 	//view.setSize(1280, 800);                             // �����������
 	//view.reset(FloatRect(offsetX, offsetY, WIDTH, HEIGHT)); // ��������
-	//Sprite Map; Map.setTexture(Content::MapTexture); Map.setTILE_SIZE(4, 4); Map.setTextureRect(IntRect(16, 0, 16, 16));
+	//Sprite Map; Map.setTexture(res::MapTexture); Map.setTILE_SIZE(4, 4); Map.setTextureRect(IntRect(16, 0, 16, 16));
 
 	// Init player
-	player.setTexture(ContentManager::playerTexture);
+	player.setTexture(Content::playerTexture);
 	player.setTileMap(map);
+	player.setItemLayer(itemLayer);
 
 	DebugRect::enabled = true;
 
     createUI();
-
-	// ������
-	Item* item = new Item();
-	(*item).construct(ContentManager::itemSet, sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
-	//ItemManager::addItem(uiItem);
-
-	Item* item2 = new Item();
-	(*item2).construct(ContentManager::itemSet, sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
-	item2->setTilePosition(sf::Vector2f(10, 12));
-	ItemManager::addItem(item2);
-
-	// Add uiItem to inventory
-	auto* uiItem = new UIItem(item);
-	uiItem->setFillColor(sf::Color::Transparent);
-	gameScreen->addControl(uiItem);
-
-	player.inventory->getFirstEmptyCell()->addChild(uiItem);//setItem(uiItem);
+    createItem();
 }
 
 void Bulwark::createUI()
 {
-    menuScreen = new UIScreen;
-    gameScreen = new UIScreen;
-    player.inventory = new Inventory(gameScreen);
-    start = new UIButton(menuScreen);
-    quit = new UIButton(menuScreen);
-    win = new UIWindow(gameScreen);
+    // Layers
+    menuLayer = new UILayer(&stack);
+    gameLayer = new UILayer(&stack);
+    stack.pushLayer(menuLayer);
+    stack.pushLayer(gameLayer);
+    // Controls
+    player.inventory = new Inventory(gameLayer);
+    start = new UIButton(menuLayer);
+    quit = new UIButton(menuLayer);
+    win = new UIWindow(gameLayer);
 
-    //("Start", sf::Color::Black, ContentManager::font);
-	start->setPosition(WIDTH / 2 - 100, 350);
+    //("Start", sf::Color::Black, res::font);
+	start->setPosition((float)WIDTH / 2 - 100, 350);
 	start->setColor(sf::Color::Green);
 
-	// ("Quit", sf::Color::Black, ContentManager::font);
-	quit->setPosition(WIDTH / 2 - 100, 470);
+	// ("Quit", sf::Color::Black, res::font);
+	quit->setPosition((float)WIDTH / 2 - 100, 470);
 	quit->setColor(sf::Color::Green);
 
-    gameScreen->addControl(player.inventory);
-	menuScreen->addControl(start);
-	menuScreen->addControl(quit);
-    gameScreen->addControl(win);
+    gameLayer->pushControl(player.inventory);
+    menuLayer->pushControl(start);
+    menuLayer->pushControl(quit);
+    gameLayer->pushControl(win);
 
-	menuScreen->visible = true;
+    menuLayer->setVisible(true);
+
+    menuLayer->setVisible(true);
 	///////////////////////////////////////////
 	win->setPosition(100, 100);
 
-	gameScreen->visible = false;
-
-	/////////////////////////////////////////
-
+    gameLayer->setVisible(false);
 }
 
-void Bulwark::pollEnvent()
+void Bulwark::createItem()
 {
-	sf::Event event;
+    itemLayer = new ItemLayer(&stack);
+    stack.pushLayer(itemLayer);
+    // Apple
+    Item* item = new Item();
+    (*item).construct(Content::itemSet, sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
+    //ItemLayer::pushItem(uiItem);
+
+    Item* item2 = new Item();
+    (*item2).construct(Content::itemSet, sf::IntRect(0, 0, TILE_SIZE, TILE_SIZE));
+    item2->setTilePosition(sf::Vector2f(10, 12));
+
+    itemLayer->pushItem(item2);
+
+    // Add UIItem to inventory
+    auto* uiItem = new UIItem(item);
+    uiItem->setFillColor(sf::Color::Transparent);
+    gameLayer->pushControl(uiItem);
+
+    player.inventory->getFirstEmptyCell()->addChild(uiItem);//setItem(uiItem);
+}
+
+void Bulwark::onPullEvents()
+{
+	sf::Event event{};
     // Poll all events from the queue
 	while (window.pollEvent(event))
 	{
@@ -91,21 +123,59 @@ void Bulwark::pollEnvent()
         switch(event.type)
         {
             case sf::Event::Closed:
-            {
                 window.close();
                 break;
-            }
             case sf::Event::Resized:
-            {
-                // TODO add
+                {
+                WIDTH = event.size.width;
+                HEIGHT = event.size.height;
+                // Reset window and view size
+                window.setSize(sf::Vector2u(WIDTH, HEIGHT));
+                view.reset(sf::FloatRect(0.0f, 0.0f, WIDTH, HEIGHT));
                 break;
             }
             case sf::Event::KeyPressed:
+            {
+                switch(event.key.code)
+                {
+                    case sf::Keyboard::E:
+                        break;
+                    case sf::Keyboard::F:
+                        break;
+                    case sf::Keyboard::G:
+                        break;
+                    case sf::Keyboard::Q:
+                        player.dropUp(player.inventory->getSelectedCell());
+                        break;
+                    case sf::Keyboard::Num1:
+                        player.inventory->selectedCell = 0;
+                        break;
+                    case sf::Keyboard::Num2:
+                        player.inventory->selectedCell = 1;
+                        break;
+                    case sf::Keyboard::Num3:
+                        player.inventory->selectedCell = 2;
+                        break;
+                    case sf::Keyboard::Num4:
+                        player.inventory->selectedCell = 3;
+                        break;
+                    case sf::Keyboard::Num5:
+                        player.inventory->selectedCell = 4;
+                        break;
+                }
                 break;
+            }
             case sf::Event::KeyReleased:
                 break;
             case sf::Event::MouseWheelMoved:
+            {
+                if (event.mouseWheel.delta == 1 && player.inventory->selectedCell >= 1)
+                    --player.inventory->selectedCell;
+                else if (event.mouseWheel.delta == -1 && player.inventory->selectedCell <= 3)
+                    ++player.inventory->selectedCell;
+
                 break;
+            }
             case sf::Event::MouseWheelScrolled:
                 break;
             case sf::Event::MouseButtonPressed:
@@ -113,81 +183,31 @@ void Bulwark::pollEnvent()
                 if(event.mouseButton.button == sf::Mouse::Left)
                 {
                     // ���� ������ �� ��������� ��� �����������
-                    if (UIManager::getMouseOver() == nullptr)
-                    {
-                        sf::Vector2f MousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-                        player.goTo(MousePos.x, MousePos.y);
-                    }
-                }
+                    // TODO
+                    //if (stack.getMouseOver() != nullptr) break;
 
+                    sf::Vector2f MousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                    player.goTo(MousePos.x, MousePos.y);
+                    break;
+                }
                 if(event.mouseButton.button == sf::Mouse::Right)
                 {
-                    if (UIManager::getMouseOver() == nullptr)
-                    {
-                        sf::Vector2f MousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-                        player.goTo(MousePos.x, MousePos.y);
-                        player.setPicking(true);
-                    }
+                    //if (stack.getMouseOver() != nullptr) break;
+
+                    sf::Vector2f MousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                    player.goTo(MousePos.x, MousePos.y);
+                    player.setPicking(true);
+                    break;
                 }
-
-
                 break;
             }
             case sf::Event::MouseButtonReleased:
                 break;
         }
-
-		if (event.type == sf::Event::Closed)
-
-		if (event.type == sf::Event::MouseButtonPressed)
-		{
-			if (event.key.code == sf::Mouse::Left)
-			{
-
-			}
-			if (event.key.code == sf::Mouse::Right)
-			{
-				// ���� ������ �� ��������� ��� �����������
-
-			}
-		}
-		
-		if (event.type == sf::Event::MouseLeft)
-		{
-
-		}
-		if (event.type == sf::Event::MouseEntered)
-		{
-
-		}
-		// �������� ������� ����
-		if (event.type == sf::Event::MouseWheelMoved)
-		{
-			if (event.mouseWheel.delta == 1 && player.inventory->selectedCell >= 1)
-				--player.inventory->selectedCell;
-			else if (event.mouseWheel.delta == -1 && player.inventory->selectedCell <= 3)
-				++player.inventory->selectedCell;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1))
-			player.inventory->selectedCell = 0;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2))
-			player.inventory->selectedCell = 1;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3))
-			player.inventory->selectedCell = 2;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4))
-			player.inventory->selectedCell = 3;
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5))
-			player.inventory->selectedCell = 4;
-		
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
-		{
-			InventoryCell* cell = player.inventory->getSelectedCell();
-			player.dropUp(cell);
-		}
 	}
 }
 
-void Bulwark::update()
+void Bulwark::onUpdate()
 {
 	// Elapsed time
 	float deltaTime = clock.getElapsedTime().asSeconds();
@@ -198,15 +218,15 @@ void Bulwark::update()
 	clock.restart();
 
 	// ���������� ������
-	UIManager::update();
+    stack.onUpdate();
 	player.update(deltaTime);
 
-	// Window follow view
-	window.setView(view);
+
 	// View follow player
 	view.setCenter(player.getPosition());
+	// Window follow view
+    window.setView(view);
 
-	// Mouse position
 	//sf::Vector2f MousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 	//std::cout << "MX " << MousePos.x / 64 << " MY " << MousePos.y / TILE_SIZE << std::endl;
 }
@@ -217,35 +237,31 @@ void Bulwark::draw()
 	map.draw(window);
 	// Player
 	player.draw(window);
-	// UI
-	UIManager::draw(window);
+	// Layers
+    stack.onDraw(window);
 	// Debug
 	DebugRect::draw(window);
-	// Item
-	ItemManager::draw(window);
 
-	// Text TODO make better
-	drawText("X ", player.getPosition().x / TILE_SIZE, sf::Vector2i(WIDTH - 154, 550));
-	drawText("Y ", player.getPosition().y / TILE_SIZE, sf::Vector2i(WIDTH - 154, 580));
-	drawText("FPS ", (float) 1.f / time, sf::Vector2i(WIDTH - 134, 0));
+    drawText("X ",   player.getPosition().x / TILE_SIZE, sf::Vector2f(WIDTH - 154, 550));
+    drawText("Y ",   player.getPosition().y / TILE_SIZE, sf::Vector2f(WIDTH - 154, 580));
+    drawText("FPS ", (float) 1.f / time,                 sf::Vector2f(WIDTH - 134, 0));
 }
 
-void Bulwark::drawText(const char* text, float data, const sf::Vector2i position, const char* count)
+void Bulwark::drawText(const char *string, float data, sf::Vector2f position)
 {
-	sf::Text Text; Text.setString(""); Text.setFont(ContentManager::font); Text.setCharacterSize(40); Text.setFillColor(sf::Color::Black);
+	sf::Text Text("", Content::font, 40);
+	Text.setFillColor(sf::Color::Black);
 
-	char temp[10];
-	sprintf(temp, "%f", data); // convert float -> string
+	char temp[10]; sprintf(temp, "%.2f", data); // Convert float to -> string
 
-	Text.setString(text + std::string(temp));
-
+	Text.setString(string + std::string(temp));
 	Text.setPosition(sf::Vector2f(position));
-
-	window.draw(Text, getViewTransformOffSet());
+	// Draw without offset
+	window.draw(Text, getViewTransformOffSet(window));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void Bulwark::pollEnventMenu()
+void Bulwark::onPullEventsMenu()
 {
 	sf::Event event{};
 	// Poll all events from the queue
@@ -257,10 +273,15 @@ void Bulwark::pollEnventMenu()
                 window.close();
                 break;
             }
-            case sf::Event::Resized: {
+            case sf::Event::Resized:
+                {
                 // TODO change WIDTH and HEIGHT
+                WIDTH  = event.size.width; HEIGHT = event.size.height;
+                // Reset window and view size
+                window.setSize(sf::Vector2u(WIDTH, HEIGHT));
+                view.reset(sf::FloatRect(0.0f, 0.0f, WIDTH, HEIGHT));
                 break;
-            }
+                }
             case sf::Event::KeyPressed:
                 break;
             case sf::Event::KeyReleased:
@@ -269,22 +290,32 @@ void Bulwark::pollEnventMenu()
                 break;
             case sf::Event::MouseWheelScrolled:
                 break;
-            case sf::Event::MouseButtonPressed: {
-                if (event.mouseButton.button == sf::Mouse::Left) {
-                    UIBase *over = UIManager::getMouseOver();
-                    if (over == nullptr) break;
+            case sf::Event::MouseButtonPressed:
+                {
+                if (event.mouseButton.button == sf::Mouse::Left)
+                {
+                    //UIBase *over = stack.getMouseOver();
 
-                    if (over == start) {
+                    //if (over == nullptr) break;
+
+                    auto mouseGlobalPos = (sf::Vector2f)sf::Mouse::getPosition(window);
+
+                    if (/*over == start*/ start->getGlobalBounds().contains(mouseGlobalPos))
+                    {
                         gamePlay = true;
-                        UIManager::deleteScreen(menuScreen);
-                        gameScreen->visible = true;
+                        stack.popLayer(menuLayer);
+                        delete menuLayer;
+
+                        gameLayer->setVisible(true);
                     }
-                    if (over == quit) {
+                    if (/*over == quit*/ quit->getGlobalBounds().contains(mouseGlobalPos))
+                    {
                         window.close();
                     }
                 }
 
-                if (event.mouseButton.button == sf::Mouse::Right) {
+                if (event.mouseButton.button == sf::Mouse::Right)
+                {
                     // TODO add
                 }
 
@@ -296,16 +327,16 @@ void Bulwark::pollEnventMenu()
 	}
 }
 
-void Bulwark::updateMenu()
+void Bulwark::onUpdateMenu()
 {
 	// ���������� ������
-	UIManager::update();
+    stack.onUpdate();
 }
 
 void Bulwark::drawMenu()
 {
 	// Background
-    sf::Sprite grass(ContentManager::tileSet, sf::IntRect(0, 16 * 2, 16, 16));
+    sf::Sprite grass(Content::tileSet, sf::IntRect(0, 16 * 2, 16, 16));
 	grass.setScale(sf::Vector2f(4, 4));
 	for (int Y = 0; Y < HEIGHT/TILE_SIZE; Y++)
 	{
@@ -319,21 +350,11 @@ void Bulwark::drawMenu()
 		}
 	}
 	// Logo
-	sf::Sprite logo(ContentManager::menuTexture);
+	sf::Sprite logo(Content::menuTexture);
 	logo.setPosition(0, 0);
 	window.draw(logo);
-	// UI
-	UIManager::draw(window);
-	// Item
-	ItemManager::draw(window);
+	// Layers
+    stack.onDraw(window);
 	// Debug
 	DebugRect::draw(window);
 }
-
-bool Bulwark::isGamePlay() const
-{
-	return gamePlay;
-}
-
-
-

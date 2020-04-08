@@ -1,12 +1,13 @@
 #include "Inventory.h"
 
 #include "Global.h"
-#include "UIManager.h"
+#include "LayerStack.h"
+#include "UI/UILayer.h"
 #include "Content.h"
-#include "Item.h"
+#include "Item/Item.h"
 #include "InventoryCell.h"
 
-Inventory::Inventory(UIScreen* screenParent) : UIWindow(screenParent),
+Inventory::Inventory(UILayer* screenParent) : UIWindow(screenParent),
     cellCount(0)
 {
 	dragAble = true;
@@ -19,19 +20,19 @@ Inventory::Inventory(UIScreen* screenParent) : UIWindow(screenParent),
 
 void Inventory::createCells()
 {
-	if (screenParent == nullptr) return;
+	if (layerParent == nullptr) return;
 
 	cellCount = 5;
 	setSize(sf::Vector2f(cellCount * 64 + 64, 64));
 	for (int i = 0; i < cellCount; i++)
-        createCell();
+        addCell();
 }
 
-void Inventory::createCell()
+void Inventory::addCell()
 {
 	auto* cell = new InventoryCell(this);
 	cell->setPosition(cells.size() * cell->getSize().x, 0);
-	screenParent->addControl(cell);
+	layerParent->pushControl(cell);
 
 	cells.push_back(cell);
 }
@@ -45,16 +46,16 @@ bool Inventory::isDragAllow() const
 			cellDrag = true;
 	}
 
-	if (cellDrag && screenParent->drag != this)
+	if (cellDrag && layerParent->drag != this)
 		return false;
 
 	return UIDragable::isDragAllow();
 }
 
-void Inventory::update()
+void Inventory::onUpdate()
 {
-	if (screenParent == nullptr) return;
-	UIWindow::update();
+	if (layerParent == nullptr) return;
+    UIWindow::onUpdate();
 
 	for (int i = 0; i < cellCount; i++)
 	{
@@ -65,7 +66,7 @@ void Inventory::update()
 	}
 }
 
-InventoryCell * Inventory::getFirstEmptyCell()
+InventoryCell * Inventory::getFirstEmptyCell() const
 {
 	for (InventoryCell* cell : cells)
 	{
@@ -76,19 +77,9 @@ InventoryCell * Inventory::getFirstEmptyCell()
 	return nullptr;
 }
 
-InventoryCell * Inventory::getSelectedCell()
+InventoryCell* Inventory::getCell(unsigned int index) const
 {
-	return getCell(selectedCell);
-}
-
-InventoryCell* Inventory::getCell(unsigned int index)
-{
-	if (index > cells.size())
-		return nullptr;
+	if (index > cells.size()) return nullptr;
 
 	return cells[index];
-}
-
-const char *Inventory::getName() const {
-    return "Inventory";
 }

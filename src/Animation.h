@@ -1,11 +1,8 @@
-#pragma once
+//
+// Created by Егор Зорин on 05/04/2020.
+//
 
-class Animation
-{
-public:
+#ifndef BULWARK_ANIMATION_H
+#define BULWARK_ANIMATION_H
 
-
-	Animation();
-
-};
-
+#endif //BULWARK_ANIMATION_H

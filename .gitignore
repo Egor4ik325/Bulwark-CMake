@@ -5,6 +5,9 @@
 cmake-build-debug
 cmake-build-release
 
+# frameworks
+dependencies/frameworks
+
 # cache
 .DS_STORE
 

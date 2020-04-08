@@ -1,16 +1,16 @@
 #include "Content.h"
 ///////////////////   ????????????? ??????????   /////////////////
 
-const std::string ContentManager::CONTENT_DIR = "Content/";
-sf::Texture ContentManager::tileSet;
-sf::Texture ContentManager::playerTexture;
-sf::Texture ContentManager::effectTexture;
-sf::Texture ContentManager::itemSet;
-sf::Texture ContentManager::invCellTexture;
-sf::Texture ContentManager::menuTexture;
-sf::Font ContentManager::font;
+const std::string Content::CONTENT_DIR = "res/";
+sf::Texture Content::tileSet;
+sf::Texture Content::playerTexture;
+sf::Texture Content::effectTexture;
+sf::Texture Content::itemSet;
+sf::Texture Content::invCellTexture;
+sf::Texture Content::menuTexture;
+sf::Font Content::font;
 
-void ContentManager::loadContent()
+void Content::loadContent()
 {
 	tileSet.loadFromFile       (CONTENT_DIR + "TileSet.png");
 	playerTexture.loadFromFile (CONTENT_DIR + "PlayerTexture.png");

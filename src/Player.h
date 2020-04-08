@@ -3,6 +3,7 @@
 #include "Inventory.h"
 
 class TileMap;
+class ItemLayer;
 
 class Player
 {
@@ -12,12 +13,12 @@ private:
 	const TileMap *map{};         // ����� - ������ ��� ������ ������, ��� �������� � ���������
 	const sf::Texture *texture{}; // �������� ������ - ������ ��� ������ ������
 
-	// flags
-	bool going{};
-	bool picking{};
-	bool onTile{};
+	// Flags
+	bool going;
+	bool picking;
+	bool onTile;
 
-	// properties
+	// Properties
 	float speed;
 	int health;
 
@@ -25,10 +26,10 @@ private:
 	DIR playerDir; DIR targDir;
 
 	// moving
-	sf::Vector2i targ;  // ���������� ���� ����
+	sf::Vector2i target;  // ���������� ���� ����
 	sf::Vector2i targT; 
 	bool goingDirFlag; 
-	int goneX{}, goneY{};
+	int goneX, goneY;
 
 	// animation
 	float frame;
@@ -37,31 +38,32 @@ private:
 
 public:
 	Inventory* inventory;      // ���������, ��� ������� ������ - ���������
+	ItemLayer* itemLayer;
 public:
 	Player();
 	// �������� �� ������, �� ���������� ��������� ������
 	Player(const sf::Texture& texture); // ������� ������������ - ��� ��� ��� ������ ���������� nullptr ��� ����� ������ ������ ����� -- ����� �������� ������ ����� ������ ���������� �� ������� ����� ������� ������
 
 	void update(float time);
-	void draw(sf::RenderTarget & target);
-	
+	void draw(sf::RenderTarget& target);
+
 	void pickUp();
 	void dropUp(InventoryCell* cell);
 	void stop();
 	
-	void moveBy(int TileX, int TileY);
+	void moveBy(int tileX, int tileY);
 
 	void goTo(int x, int y);
-	void setTexture(const sf::Texture &playerTex); 
-	void setTileMap(const TileMap &map);
-	void setPicking(bool picking);
+	void setTexture(const sf::Texture &playerTex);
+	void setTileMap(const TileMap &map)            { this->map = &map; }
+	void setPicking(bool picking)                  { this->picking = picking;}
+	void setItemLayer(ItemLayer* itemLayer);
 
-	bool isPicking() const;
-	sf::Vector2f getPosition() const;
-	sf::Vector2i getRoundPos() const;
-	sf::Vector2i getTilePos() const;	
+	sf::Vector2f getPosition()      const { return position; }
+	sf::Vector2i getRoundPos()      const;
+	sf::Vector2i getTilePos()       const;
+	sf::Vector2f getMiddlePos()     const;
 	sf::Vector2i getMiddleTilePos() const;
-	sf::Vector2f getMiddlePos() const;
 
 private:
 	void updateMovement(float time);

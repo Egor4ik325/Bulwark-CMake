@@ -1,7 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include <vector>
-#include "UIWindow.h"
+#include "UI/UIWindow.h"
 #include "InventoryCell.h"
 
 class Inventory : public UIWindow
@@ -13,19 +13,18 @@ protected:
 public:
 	unsigned int selectedCell;
 
-	explicit Inventory(UIScreen* screenParent = nullptr);
+	explicit Inventory(UILayer* screenParent = nullptr);
 
-	void update() override;
+	void onUpdate() override;
 	void createCells();
 
 	bool isDragAllow() const override;
-	InventoryCell* getCell(unsigned int index);
-	InventoryCell* getFirstEmptyCell();
-	InventoryCell* getSelectedCell();
+	InventoryCell* getCell(unsigned int index) const;
+	InventoryCell* getFirstEmptyCell() const;
 
-
-    const char *getName() const override;
+	InventoryCell* getSelectedCell() const { return getCell(selectedCell); }
+	const char *getName() const override { return "Inventory"; }
 
 protected:
-	void createCell();
+	void addCell();
 };

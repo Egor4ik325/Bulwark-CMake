@@ -2,13 +2,12 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
-class ContentManager 
+class Content
 {
 public:
-
 	static const std::string CONTENT_DIR;
 	
-    static sf::Texture tileSet; // Плитки 16x16 пикселей
+    static sf::Texture tileSet; // пїЅпїЅпїЅпїЅпїЅпїЅ 16x16 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	static sf::Texture playerTexture;
 	static sf::Texture effectTexture;
 	static sf::Texture itemSet;
@@ -17,6 +16,6 @@ public:
 
 	static sf::Font font;
 
-	//// Загрузить контент STATIC //////
+	//// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ STATIC //////
 	static void loadContent();
 };

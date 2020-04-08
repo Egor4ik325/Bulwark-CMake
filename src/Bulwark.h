@@ -1,15 +1,23 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Player.h"
-#include "TileMap.h"
+#include "Map/TileMap.h"
 #include "UIs.h"
+#include "LayerStack.h"
 
+class ItemLayer;
 ///////////////////////////////////////
 ///  Just an application class
 ///  It will handle everything
 ///////////////////////////////////////
+// TODO create Event
 class Bulwark
 {
+public:
+    // Window
+    sf::RenderWindow window;
+	bool gamePlay;
+
 private:
     // Player
 	Player player;
@@ -19,29 +27,34 @@ private:
 	sf::View view;
 	// Elapsed time
 	sf::Clock clock;
-	float time{};
+	float time;
 	//std::list <Effect> Effects;  Manager
+	LayerStack stack;
 
 	// UI
-	UIScreen* menuScreen, *gameScreen;
+	UILayer* menuLayer, *gameLayer;
 	UIWindow* win;
 	UIButton* start, *quit;
-	
-	bool gamePlay;
-public:
+	// Item
+	ItemLayer* itemLayer;
 
+	// current window width and height
+	unsigned int HEIGHT, WIDTH;
+
+public:
 	Bulwark();
-	void pollEnvent();
-	void update();
+	void onPullEvents();
+	void onUpdate();
 	void draw();
 	
-	void pollEnventMenu();
-	void updateMenu();
+	void onPullEventsMenu();
+	void onUpdateMenu();
 	void drawMenu();
 
-	bool isGamePlay() const;
+	//bool isGamePlay() const;
 private:
 	void createUI();
-	static void drawText(const char* text, float data, sf::Vector2i position, const char* count = "%.4f");
+	void createItem();
+	void drawText(const char *string, float data, sf::Vector2f position);
 };
 

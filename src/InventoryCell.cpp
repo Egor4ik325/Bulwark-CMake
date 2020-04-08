@@ -1,41 +1,41 @@
 #include "InventoryCell.h"
-#include "UIItem.h"
+#include "UI/UIItem.h"
 #include "Global.h"
 #include "Content.h"
 #include "Inventory.h"
 
-InventoryCell::InventoryCell(Inventory* inv) : UIDragable(inv->screenParent),
+InventoryCell::InventoryCell(Inventory* inv) : UIDragable(inv->layerParent),
     invParent(inv),
     uiItem(nullptr),
     selectedColor(sf::Color::Black)
 {
 	// Properties
-	screenParent = inv->screenParent;
+	layerParent = inv->layerParent;
 	dragAble = false;
 	// ������������� ��������
 	setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
-	setTexture(&ContentManager::invCellTexture, true);
+	setTexture(&Content::invCellTexture, true);
 	setTextureRect(sf::IntRect(0, 0, 16, 16));
 }
 
-void InventoryCell::update()
+void InventoryCell::onUpdate()
 {
 	if (uiItem != nullptr && !uiItem->isDragAllow())
 	{
 		// ������� Item ������
 		uiItem->setPosition(getPosition());
 	}
-	UIDragable::update();
+    UIDragable::onUpdate();
 }
 
-void InventoryCell::draw(sf::RenderTarget & target)
+void InventoryCell::onDraw(sf::RenderWindow &target)
 {
 	if (invParent->getSelectedCell() == this)
 		setFillColor(selectedColor);
 	else
 		setFillColor(sf::Color::White);
 
-	UIDragable::draw(target);
+	UIDragable::onDraw(target);
 }
 
 //void InventoryCell::setItem(UIItem * item)
@@ -85,8 +85,4 @@ UIItem * InventoryCell::getItem()
 bool InventoryCell::isEmpty()
 {
 	return uiItem == nullptr;
-}
-
-const char *InventoryCell::getName() const {
-    return "InventoryCell";
 }
