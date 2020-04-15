@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include "Inventory.h"
 
-class TileMap;
+class MapLayer;
 class ItemLayer;
 
 class Player
@@ -10,7 +10,7 @@ class Player
 private:
 	sf::Vector2f position;      // ����������	
 	sf::Vector2f velocity;      // ��������	
-	const TileMap *map{};         // ����� - ������ ��� ������ ������, ��� �������� � ���������
+	const MapLayer *map{};         // ����� - ������ ��� ������ ������, ��� �������� � ���������
 	const sf::Texture *texture{}; // �������� ������ - ������ ��� ������ ������
 
 	// Flags
@@ -42,7 +42,7 @@ public:
 public:
 	Player();
 	// �������� �� ������, �� ���������� ��������� ������
-	Player(const sf::Texture& texture); // ������� ������������ - ��� ��� ��� ������ ���������� nullptr ��� ����� ������ ������ ����� -- ����� �������� ������ ����� ������ ���������� �� ������� ����� ������� ������
+	explicit Player(const sf::Texture& texture); // ������� ������������ - ��� ��� ��� ������ ���������� nullptr ��� ����� ������ ������ ����� -- ����� �������� ������ ����� ������ ���������� �� ������� ����� ������� ������
 
 	void update(float time);
 	void draw(sf::RenderTarget& target);
@@ -53,9 +53,11 @@ public:
 	
 	void moveBy(int tileX, int tileY);
 
+	void onMouseButtonPressed(sf::Event event);
+
 	void goTo(int x, int y);
 	void setTexture(const sf::Texture &playerTex);
-	void setTileMap(const TileMap &map)            { this->map = &map; }
+	void setTileMap(const MapLayer &map)            { this->map = &map; }
 	void setPicking(bool picking)                  { this->picking = picking;}
 	void setItemLayer(ItemLayer* itemLayer);
 

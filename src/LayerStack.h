@@ -28,10 +28,14 @@ public:
 	//UIBase* getMouseOver();
 	//UIBase* getMouseDrag();
 
+	bool onMouseButtonPressed(sf::Event& event);
+
 	// �������� ����� Screen ���������� � ������������ ������
 	void pushLayer(Layer* layer);
 	void popLayer (Layer* layer);
 
+
+	void onEvent(sf::Event& event);
 	//static void pushLayer(UILayer& screen);
 	//void popLayer(unsigned int index);
 private:

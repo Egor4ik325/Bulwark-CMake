@@ -1,6 +1,8 @@
 #include "ItemLayer.h"
-#include <iostream>
+
+#include "Application.h"
 #include "Global.h"
+#include <iostream>
 
 ItemLayer::ItemLayer(LayerStack *stack) : Layer(*stack)
 {
@@ -46,10 +48,10 @@ Item* ItemLayer::getItem(int tileX, int tileY)
 {
 	for (Item* item : items)
 	{
-		sf::Vector2f pointPos(tileX * TILE_SIZE, tileY * TILE_SIZE);
+		sf::Vector2f pointPos(tileX * Application::get().getTileSize(), tileY * Application::get().getTileSize());
 
 		//sf::Vector2f itemCoords(item->GetGlobalPosition());
-		//sf::FloatRect itemRect(itemPos, sf::Vector2f( TILE_SIZE, TILE_SIZE ));
+		//sf::FloatRect itemRect(itemPos, sf::Vector2f( TileSize, TileSize ));
 		
 		if (item->getGlobalBounds().contains(pointPos))
 			return item;
@@ -60,7 +62,7 @@ Item* ItemLayer::getItem(int tileX, int tileY)
 
 Item * ItemLayer::getItem(sf::Vector2f pos)
 {
-	return getItem(pos.x / TILE_SIZE, pos.y / TILE_SIZE);
+	return getItem(pos.x / Application::get().getTileSize(), pos.y / Application::get().getTileSize());
 }
 
 void ItemLayer::setItemInfo(unsigned int id, const ItemInfo & info)

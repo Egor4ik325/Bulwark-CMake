@@ -1,14 +1,37 @@
-#include "TileMap.h"
-
+#include "MapLayer.h"
 #include "Map/TinyXML/tinyxml.h"
+#include "Global.h"
+#include "LayerStack.h"
+
 #include <iostream>
 #include <map>
-#include "Global.h"
-
 
 using namespace sf;
 
-bool TileMap::loadFromFile(std::string filename)
+MapLayer::MapLayer(LayerStack &stack) : Layer(stack),
+    width(0), height(0),
+    tileWidth(0), tileHeight(0),
+    firstTileID(-1)
+{
+}
+
+void MapLayer::onUpdate() {
+
+}
+
+void MapLayer::onDraw(sf::RenderWindow &win) {
+    // ������ ��� ����� (������� �� ������!)
+    //for (int layer = 0; layer < layers.size(); layer++)
+    //	for (int tile = 0; tile < layers[layer].tiles.size(); tile++)
+    //		target.onRender(layers[layer].tiles[tile]);
+    if(!visible) return;
+
+    for(TileLayer& layer : layers)
+        for(sf::Sprite& tile : layer.tiles)
+            win.draw(tile);
+}
+
+bool MapLayer::loadFromFile(const std::string& filename)
 {
 	TiXmlDocument levelFile(filename.c_str());
 
@@ -158,15 +181,7 @@ bool TileMap::loadFromFile(std::string filename)
 	return true;
 }
 
-void TileMap::draw(sf::RenderTarget & target)
-{
-	// ������ ��� ����� (������� �� ������!)
-	for (int layer = 0; layer < layers.size(); layer++)
-		for (int tile = 0; tile < layers[layer].tiles.size(); tile++)
-			target.draw(layers[layer].tiles[tile]);
-}
-
-int TileMap::getTileId(int x, int y) const
+int MapLayer::getTileId(int x, int y) const
 {
 	// ����������� pixel � �����
 	int TileX = x / TILE_SIZE;
@@ -182,22 +197,12 @@ int TileMap::getTileId(int x, int y) const
 	return layers[layer].tilesId[TileX + TileY * width] - 1;
 }
 
-int TileMap::getTileId(Vector2i TilePos) const
-{
-	return getTileId(TilePos.x, TilePos.y);
-}
-
-TileMap::TileType TileMap::getTileType(int x, int y) const
+MapLayer::TileType MapLayer::getTileType(int x, int y) const
 {
 	return typeArr[getTileId(x, y)];
 }
 
-TileMap::TileType TileMap::getTileType(const Vector2i &TilePos) const
-{
-	return typeArr[getTileId(TilePos.x, TilePos.y)];
-}
-
-void TileMap::setTileSize(const int TileSize)
+void MapLayer::setTileSize(const int TileSize)
 {
 	for (int layer = 0; layer < layers.size(); layer++)
 		for (int tile = 0; tile < layers[layer].tiles.size(); tile++)
@@ -214,7 +219,15 @@ void TileMap::setTileSize(const int TileSize)
 		}
 }
 
-void TileMap::setTileType(int id, TileType type)
+void MapLayer::setTileType(int id, TileType type)
 {
 	typeArr[id] = type;
 }
+
+
+
+std::string MapLayer::getName() const {
+    return "MapLayer";
+}
+
+

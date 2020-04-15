@@ -1,4 +1,6 @@
 #include "Item.h"
+
+#include "Application.h"
 #include "Global.h"
 #include "ItemLayer.h"
 
@@ -36,7 +38,7 @@ sf::FloatRect Item::getGlobalBounds()
 
 void Item::setTilePosition(sf::Vector2f tilePos)
 {
-	sprite.setPosition(sf::Vector2f(tilePos.x * TILE_SIZE, tilePos.y * TILE_SIZE));
+	sprite.setPosition(sf::Vector2f(tilePos.x * (float)Application::get().getTileSize(), tilePos.y * (float)Application::get().getTileSize()));
 }
 
 void Item::setPosition(sf::Vector2f position)

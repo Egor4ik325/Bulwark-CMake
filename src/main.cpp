@@ -1,7 +1,7 @@
 #include "SFML/Graphics.hpp"
 #include <iostream>
 
-#include "Bulwark.h"
+#include "Application.h"
 #include "Content.h"
 #include "Global.h"
 
@@ -11,33 +11,33 @@ int main()
     Content::loadContent();
 
     // Application class
-    Bulwark app;
+    Application bulwark;
 
-    std::cout << "Bulwark size: " << sizeof(app) << " bytes" << std::endl;
+    std::cout << "Application size: " << sizeof(bulwark) << " bytes" << std::endl;
 
     // Main loop
-    while (app.window.isOpen())
+    while (bulwark.window.isOpen())
     {
 
         // Clear
-        app.window.clear(sf::Color::White);
+        bulwark.window.clear(sf::Color::White);
         //system("cls");
 
-        if (app.gamePlay){
+        if (bulwark.gamePlay){
             // Input
-            app.onPullEvents();
+            bulwark.onPullWindowEvents();
             // Update
-            app.onUpdate();
+            bulwark.onUpdate();
             // Draw
-            app.draw();
+            bulwark.onRender();
         }
         else {
-            app.onPullEventsMenu();
-            app.onUpdateMenu();
-            app.drawMenu();
+            bulwark.onPullEventsMenu();
+            bulwark.onUpdateMenu();
+            bulwark.onRenderMenu();
         }
 
-        app.window.display();
+        bulwark.window.display();
     }
     return 0;
 }

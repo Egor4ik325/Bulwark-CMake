@@ -7,7 +7,7 @@
 #include "Item/Item.h"
 #include "InventoryCell.h"
 
-Inventory::Inventory(UILayer* screenParent) : UIWindow(screenParent),
+Inventory::Inventory(UILayer* layerParent) : UIWindow(layerParent),
     cellCount(0)
 {
 	dragAble = true;
@@ -37,19 +37,47 @@ void Inventory::addCell()
 	cells.push_back(cell);
 }
 
-bool Inventory::isDragAllow() const
+//bool Inventory::isDragAllow() const
+//{
+//	bool cellDrag = false;
+//	for (auto c : cells)
+//	{
+//		if (c->isDragAllow())
+//			cellDrag = true;
+//	}
+//
+//	if (cellDrag && layerParent->drag != this)
+//		return false;
+//
+//	return UIDragable::isDragAllow();
+//}
+
+void Inventory::onEvent(sf::Event &event)
 {
-	bool cellDrag = false;
+    UIWindow::onEvent(event);
+
+    for (int i = 0; i < cellCount; i++)
+    {
+    	if (!cells[i]->isDragAllow(event))
+    	{
+    		cells[i]->setPosition(getPosition() + sf::Vector2f(i * TILE_SIZE, 0));
+    	}
+    }
+}
+
+bool Inventory::isDragAllow(const sf::Event &event) const
+{
+    bool cellDrag = false;
 	for (auto c : cells)
 	{
-		if (c->isDragAllow())
+		if (c->isDragAllow(event))
 			cellDrag = true;
 	}
 
 	if (cellDrag && layerParent->drag != this)
-		return false;
+	    return false;
 
-	return UIDragable::isDragAllow();
+    return UIWindow::isDragAllow(event);
 }
 
 void Inventory::onUpdate()
@@ -57,13 +85,13 @@ void Inventory::onUpdate()
 	if (layerParent == nullptr) return;
     UIWindow::onUpdate();
 
-	for (int i = 0; i < cellCount; i++)
-	{
-		if (!cells[i]->isDragAllow())
-		{
-			cells[i]->setPosition(getPosition() + sf::Vector2f(i * TILE_SIZE, 0));
-		}
-	}
+	//for (int i = 0; i < cellCount; i++)
+	//{
+	//	if (!cells[i]->isDragAllow())
+	//	{
+	//		cells[i]->setPosition(getPosition() + sf::Vector2f(i * TILE_SIZE, 0));
+	//	}
+	//}
 }
 
 InventoryCell * Inventory::getFirstEmptyCell() const

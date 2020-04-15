@@ -1,12 +1,13 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+
 #include <list>
 
-class DebugRect
+class DebugGraphics
 {
 public:
 	static bool enabled;
-	static std::list <sf::RectangleShape> objects; // Тут хранятся все рисуемые фигуры
+	static std::list <sf::RectangleShape> objects; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
 public:
 	static void addRect(sf::FloatRect, sf::Color color);

@@ -18,12 +18,17 @@ public:
 	void onUpdate() override;
 	void createCells();
 
-	bool isDragAllow() const override;
+	//bool isDragAllow() const override;
+
 	InventoryCell* getCell(unsigned int index) const;
 	InventoryCell* getFirstEmptyCell() const;
 
 	InventoryCell* getSelectedCell() const { return getCell(selectedCell); }
 	const char *getName() const override { return "Inventory"; }
+
+    bool isDragAllow(const sf::Event &event) const override;
+
+    void onEvent(sf::Event &event) override;
 
 protected:
 	void addCell();

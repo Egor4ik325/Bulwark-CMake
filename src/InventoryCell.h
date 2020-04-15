@@ -29,5 +29,7 @@ public:
 	UIItem* getItem();
 
     inline const char *getName() const override { return "InventoryCell"; }
+
+    void onEvent(sf::Event &event) override;
 };
 

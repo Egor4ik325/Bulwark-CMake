@@ -30,6 +30,8 @@ public:
 
     UIBase* getOver();
 
+    void onEvent(sf::Event &event) override;
+
 private:
-	void updateDrag();
+	void updateDrag(sf::Event &event);
 };

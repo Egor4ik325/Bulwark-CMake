@@ -91,6 +91,19 @@ void LayerStack::popLayer(Layer * layer)
     //}
 }
 
+bool LayerStack::onMouseButtonPressed(sf::Event &event) {
+
+    return false;
+}
+
+void LayerStack::onEvent(sf::Event &event)
+{
+    for(Layer* layer : layers)
+    {
+        layer->onEvent(event);
+    }
+}
+
 //void LayerStack::popLayer(unsigned int index)
 //{
 //	if (index > layers.size()) return;

@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "UIDragable.h"
 
+/// UIWindowDrag
 class UIWindow : public  UIDragable
 {
 protected:
@@ -14,7 +15,7 @@ protected:
 	sf::Color titleSelectedColor;
 	sf::Color titleDragColor;
 
-	void applyColors();
+	void applyColors(sf::Event &event);
 
 public:
 	explicit UIWindow(UILayer* screenParent);
@@ -22,7 +23,10 @@ public:
 	void onUpdate() override;
 	void onDraw(sf::RenderWindow &target) override;
 
-    bool isDragAllow() const override;
+    void onEvent(sf::Event &event) override;
+
+    //bool isDragAllow() const override;
+    bool isDragAllow(const sf::Event &event) const override;
 
     inline const char *getName() const override { return "UIWindow"; }
 };

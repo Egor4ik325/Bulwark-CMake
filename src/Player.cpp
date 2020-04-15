@@ -1,19 +1,25 @@
 #include "Player.h"
-#include "Map/TileMap.h"
-#include "DebugRect.h"
+
+#include "Application.h"
+
+#include "Map/MapLayer.h"
+#include "DebugGraphics.h"
 #include "LayerStack.h"
 #include "Item/ItemLayer.h"
 #include "Global.h"
 #include "InventoryCell.h"
 #include "UI/UIItem.h"
+
 #include <cmath>
+
 
 Player::Player(): inventory(nullptr),
 	position(sf::Vector2f(13 * TILE_SIZE, 11 * TILE_SIZE)),
 	playerDir(DIR::DOWN),
 	frame(0.f), health(20), speed(1.f),
 	going(false), picking(false), onTile(false), goingDirFlag(true),
-	targDir(DIR::NONE), goneX(0), goneY(0)
+	targDir(DIR::NONE), goneX(0), goneY(0),
+	itemLayer(nullptr)
 {
 	// Properties
 }
@@ -44,13 +50,13 @@ void Player::update(float time)
 	animation(time);
 	
 	// Drawing
-	DebugRect::addRect(sf::FloatRect(position.x, position.y, TILE_SIZE, TILE_SIZE), sf::Color::Red);
+	DebugGraphics::addRect(sf::FloatRect(position.x, position.y, TILE_SIZE, TILE_SIZE), sf::Color::Red);
 	
 	sprite.setPosition(position);
 
 	// Equation to zero
 	velocity = sf::Vector2f(0.f, 0.f);
-	onTile = 0;
+	onTile = false;
 }
 
 void Player::updateMovement(float time)
@@ -72,7 +78,7 @@ void Player::updateMovement(float time)
 	// ��������
 	if (going)
 	{
-		DebugRect::addRect(sf::FloatRect(sf::Vector2f(target), sf::Vector2f(TILE_SIZE, TILE_SIZE)), sf::Color::Blue);
+		DebugGraphics::addRect(sf::FloatRect(sf::Vector2f(target), sf::Vector2f(TILE_SIZE, TILE_SIZE)), sf::Color::Blue);
 		// Stop
 		if (rPosition == target)
 		{
@@ -99,7 +105,7 @@ void Player::updateMovement(float time)
 					int NextTile = goneX + TILE_SIZE;   // ���������� ���� �������
 
 					// �������� �� ��, ��� ������ ��� ������
-					if (rPosition.x + SVector >= NextTile)
+					if (rPosition.x + SVector >= (float)NextTile)
 					{
 						goneX = position.x = NextTile;
 						goingDirFlag = false;
@@ -114,7 +120,7 @@ void Player::updateMovement(float time)
 						int NextTile = goneX - TILE_SIZE;  // ���������� ���� �������
 
 						// �������� �� ��, ��� ������ ��� ������
-						if (rPosition.x + SVector <= NextTile)
+						if (rPosition.x + SVector <= (float)NextTile)
 						{
 							goneX = position.x = NextTile;
 							goingDirFlag = false;
@@ -131,7 +137,7 @@ void Player::updateMovement(float time)
 					int NextTile = goneY + TILE_SIZE; // ���������� ���� �������
 
 					// �������� �� ��, ��� ������ ��� ������
-					if (rPosition.y + SVector >= NextTile)
+					if (rPosition.y + SVector >= (float)NextTile)
 					{
 						goneY = position.y = NextTile;
 						goingDirFlag = true;
@@ -146,7 +152,7 @@ void Player::updateMovement(float time)
 						int NextTile = goneY - TILE_SIZE;  // ���������� ���� �������
 
 						// �������� �� ��, ��� ������ ��� ������
-						if (rPosition.y + SVector <= NextTile)
+						if (rPosition.y + SVector <= (float)NextTile)
 						{
 							goneY = position.y = NextTile;
 							goingDirFlag = true;
@@ -214,14 +220,14 @@ void Player::updateMovement(float time)
 	// ��������� ������� ����������
 	//if (!Going)
 	//{
-	//	goneX = TilePos.x * TILE_SIZE;
-	//	goneY = TilePos.y * TILE_SIZE;
+	//	goneX = TilePos.x * TileSize;
+	//	goneY = TilePos.y * TileSize;
 	//}
 	//
 	// ��������
 	//if (Going)
 	//{
-	//	DebugRect::AddRect(FloatRect(sf::Vector2f(target), sf::Vector2f(TILE_SIZE, TILE_SIZE)), Color::Blue);
+	//	DebugGraphics::AddRect(FloatRect(sf::Vector2f(target), sf::Vector2f(TileSize, TileSize)), Color::Blue);
 	//	// Stop
 	//	if (RPosition == target)
 	//	{
@@ -243,7 +249,7 @@ void Player::updateMovement(float time)
 	//			if (targDir == UPRIGHT || targDir == DOWNRIGHT) // ������
 	//			{
 	//				float SVector = speed * time; // ������ �����������
-	//				int NextTile = goneX + TILE_SIZE; // ���������� ���� �������
+	//				int NextTile = goneX + TileSize; // ���������� ���� �������
 	//
 	//				// �������� �� ��, ��� ������ ��� ������
 	//				if (RPosition.x + SVector >= NextTile)
@@ -258,7 +264,7 @@ void Player::updateMovement(float time)
 	//				if (targDir == UPLEFT || targDir == DOWNLEFT) // �����
 	//				{
 	//					float SVector = -speed * time; // ������ �����������
-	//					int NextTile = goneX - TILE_SIZE;  // ���������� ���� �������
+	//					int NextTile = goneX - TileSize;  // ���������� ���� �������
 	//
 	//					// �������� �� ��, ��� ������ ��� ������
 	//					if (RPosition.x + SVector <= NextTile)
@@ -275,7 +281,7 @@ void Player::updateMovement(float time)
 	//			if (targDir == DOWNRIGHT || targDir == DOWNLEFT) // ����
 	//			{
 	//				float SVector = speed * time; // ������ �����������
-	//				int NextTile = goneY + TILE_SIZE; // ���������� ���� �������
+	//				int NextTile = goneY + TileSize; // ���������� ���� �������
 	//
 	//				// �������� �� ��, ��� ������ ��� ������
 	//				if (RPosition.y + SVector >= NextTile)
@@ -290,7 +296,7 @@ void Player::updateMovement(float time)
 	//				if (targDir == UPRIGHT || targDir == UPLEFT) // �����
 	//				{
 	//					float SVector = -speed * time; // ������ �����������
-	//					int NextTile = goneY - TILE_SIZE;  // ���������� ���� �������
+	//					int NextTile = goneY - TileSize;  // ���������� ���� �������
 	//
 	//					// �������� �� ��, ��� ������ ��� ������
 	//					if (RPosition.y + SVector <= NextTile)
@@ -312,7 +318,7 @@ void Player::updateMovement(float time)
 	//			Position.x = target.x;
 	//		else
 	//			velocity.x = speed;
-	//		goneX = TilePos.x * TILE_SIZE;
+	//		goneX = TilePos.x * TileSize;
 	//	}
 	//	else if (targDir == LEFT)   // �����
 	//	{
@@ -321,7 +327,7 @@ void Player::updateMovement(float time)
 	//			Position.x = target.x;
 	//		else
 	//			velocity.x = -speed;
-	//		goneX = TilePos.x * TILE_SIZE;
+	//		goneX = TilePos.x * TileSize;
 	//	}
 	//	else if (targDir == DOWN)   // ����
 	//	{
@@ -330,7 +336,7 @@ void Player::updateMovement(float time)
 	//			Position.y = target.y;
 	//		else
 	//			velocity.y = speed;
-	//		goneY = TilePos.y * TILE_SIZE;
+	//		goneY = TilePos.y * TileSize;
 	//	}
 	//	else if (targDir == UP)   // �����
 	//	{
@@ -339,7 +345,7 @@ void Player::updateMovement(float time)
 	//			Position.y = target.y;
 	//		else
 	//			velocity.y = -speed;
-	//		goneY = TilePos.y * TILE_SIZE;
+	//		goneY = TilePos.y * TileSize;
 	//	}
 	//}*/
 }
@@ -372,61 +378,61 @@ void Player::collision()
 	sf::Vector2i TilePos = getTilePos();
 
 	if (velocity.x > 0) {
-		if (map->getTileType(TilePos.x * TILE_SIZE + TILE_SIZE, TilePos.y * TILE_SIZE) == TileMap::WALL || map->getTileType(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE) == TileMap::WALL)
+		if (map->getTileType(TilePos.x * TILE_SIZE + TILE_SIZE, TilePos.y * TILE_SIZE) == MapLayer::WALL || map->getTileType(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE) == MapLayer::WALL)
 		{
 			going = false; 
 			position = sf::Vector2f(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE);
 			velocity = sf::Vector2f(0.f, 0.f);
-			DebugRect::addRect(sf::FloatRect(TilePos.x * TILE_SIZE + TILE_SIZE, TilePos.y * TILE_SIZE, TILE_SIZE, TILE_SIZE), sf::Color::Green);
+			DebugGraphics::addRect(sf::FloatRect(TilePos.x * TILE_SIZE + TILE_SIZE, TilePos.y * TILE_SIZE, TILE_SIZE, TILE_SIZE), sf::Color::Green);
 		}
 	}
 	else
 	if (velocity.x < 0) {
-		if (map->getTileType(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE) == TileMap::WALL)
+		if (map->getTileType(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE) == MapLayer::WALL)
 		{
 			going = false;
 			position = sf::Vector2f((TilePos.x + 1) * TILE_SIZE, TilePos.y * TILE_SIZE);
 			velocity = sf::Vector2f(0.f, 0.f);
-			DebugRect::addRect(sf::FloatRect(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE, TILE_SIZE, TILE_SIZE), sf::Color::Green);
+			DebugGraphics::addRect(sf::FloatRect(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE, TILE_SIZE, TILE_SIZE), sf::Color::Green);
 		}
 	}
 	else
 	if (velocity.y < 0) {
-		if (map->getTileType(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE) == TileMap::WALL)
+		if (map->getTileType(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE) == MapLayer::WALL)
 		{
 			going = false;
 			position = sf::Vector2f(TilePos.x * TILE_SIZE, (TilePos.y + 1) * TILE_SIZE);
 			velocity = sf::Vector2f(0.f, 0.f);
-			DebugRect::addRect(sf::FloatRect(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE, TILE_SIZE, TILE_SIZE), sf::Color::Green);
+			DebugGraphics::addRect(sf::FloatRect(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE, TILE_SIZE, TILE_SIZE), sf::Color::Green);
 		}
 	}
 	else
 	if (velocity.y > 0) {
-		if (map->getTileType(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE + TILE_SIZE) == TileMap::WALL || map->getTileType(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE) == TileMap::WALL)
+		if (map->getTileType(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE + TILE_SIZE) == MapLayer::WALL || map->getTileType(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE) == MapLayer::WALL)
 		{
 			going = false;
 			position = sf::Vector2f(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE);
 			velocity = sf::Vector2f(0.f, 0.f);
-			DebugRect::addRect(sf::FloatRect(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE + TILE_SIZE, TILE_SIZE, TILE_SIZE), sf::Color::Green);
+			DebugGraphics::addRect(sf::FloatRect(TilePos.x * TILE_SIZE, TilePos.y * TILE_SIZE + TILE_SIZE, TILE_SIZE, TILE_SIZE), sf::Color::Green);
 		}
 	}
 	/*
 	// ���� ���� �����
-	if (map->GetTileType(target.x, target.y) == TileMap::WALL)
+	if (map->GetTileType(target.x, target.y) == MapLayer::WALL)
 	{
 		Vector2i TilePosArr[8]
 		{
-			Vector2i(target.x - TILE_SIZE, target.y - TILE_SIZE),//[0]
-			Vector2i(target.x, target.y - TILE_SIZE),		 //[1]
-			Vector2i(target.x + TILE_SIZE, target.y - TILE_SIZE),//[2]
-			Vector2i(target.x + TILE_SIZE, target.y),		 //[3]
-			Vector2i(target.x + TILE_SIZE, target.y + TILE_SIZE),//[4]
-			Vector2i(target.x, target.y + TILE_SIZE),		 //[5]
-			Vector2i(target.x - TILE_SIZE, target.y + TILE_SIZE),//[6]
-			Vector2i(target.x - TILE_SIZE, target.y)		 //[7]
+			Vector2i(target.x - TileSize, target.y - TileSize),//[0]
+			Vector2i(target.x, target.y - TileSize),		 //[1]
+			Vector2i(target.x + TileSize, target.y - TileSize),//[2]
+			Vector2i(target.x + TileSize, target.y),		 //[3]
+			Vector2i(target.x + TileSize, target.y + TileSize),//[4]
+			Vector2i(target.x, target.y + TileSize),		 //[5]
+			Vector2i(target.x - TileSize, target.y + TileSize),//[6]
+			Vector2i(target.x - TileSize, target.y)		 //[7]
 		};
 
-		TileMap::Type TypeArr[8]
+		MapLayer::Type TypeArr[8]
 		{
 			map->GetTileType(TilePosArr[0]),
 			map->GetTileType(TilePosArr[1]),		 // ����
@@ -441,113 +447,113 @@ void Player::collision()
 		switch (targDir)
 		{
 		case UP:
-			if (TypeArr[5] != TileMap::WALL)
+			if (TypeArr[5] != MapLayer::WALL)
 			{
 				target = TilePosArr[5]; break;
 			}
-			if (TypeArr[4] != TileMap::WALL)
+			if (TypeArr[4] != MapLayer::WALL)
 			{
 				target = TilePosArr[4]; break;
 			}
-			if (TypeArr[6] != TileMap::WALL)
+			if (TypeArr[6] != MapLayer::WALL)
 			{
 				target = TilePosArr[6]; break;
 			}
 			break;
 		case DOWN:
-			if (TypeArr[1] != TileMap::WALL)
+			if (TypeArr[1] != MapLayer::WALL)
 			{
 				target = TilePosArr[1]; break;
 			}
-			if (TypeArr[0] != TileMap::WALL)
+			if (TypeArr[0] != MapLayer::WALL)
 			{
 				target = TilePosArr[0]; break;
 			}
-			if (TypeArr[2] != TileMap::WALL)
+			if (TypeArr[2] != MapLayer::WALL)
 			{
 				target = TilePosArr[2]; break;
 			}
 			break;
 		case RIGHT:
-			if (TypeArr[7] != TileMap::WALL)
+			if (TypeArr[7] != MapLayer::WALL)
 			{
 				target = TilePosArr[7]; break;
 			}
-			if (TypeArr[0] != TileMap::WALL)
+			if (TypeArr[0] != MapLayer::WALL)
 			{
 				target = TilePosArr[0]; break;
 			}
-			if (TypeArr[6] != TileMap::WALL)
+			if (TypeArr[6] != MapLayer::WALL)
 			{
 				target = TilePosArr[6]; break;
 			}
 			break;
 		case LEFT:
-			if (TypeArr[3] != TileMap::WALL)
+			if (TypeArr[3] != MapLayer::WALL)
 			{
 				target = TilePosArr[3]; break;
 			}
-			if (TypeArr[2] != TileMap::WALL)
+			if (TypeArr[2] != MapLayer::WALL)
 			{
 				target = TilePosArr[2]; break;
 			}
-			if (TypeArr[4] != TileMap::WALL)
+			if (TypeArr[4] != MapLayer::WALL)
 			{
 				target = TilePosArr[4]; break;
 			}
 			break;
 		case UPRIGHT:
-			if (TypeArr[5] != TileMap::WALL)
+			if (TypeArr[5] != MapLayer::WALL)
 			{
 				target = TilePosArr[5]; break;
 			}
-			if (TypeArr[7] != TileMap::WALL)
+			if (TypeArr[7] != MapLayer::WALL)
 			{
 				target = TilePosArr[7]; break;
 			}
-			if (TypeArr[6] != TileMap::WALL)
+			if (TypeArr[6] != MapLayer::WALL)
 			{
 				target = TilePosArr[6]; break;
 			}
 			break;
 		case UPLEFT:
-			if (TypeArr[5] != TileMap::WALL)
+			if (TypeArr[5] != MapLayer::WALL)
 			{
 				target = TilePosArr[5]; break;
 			}
-			if (TypeArr[3] != TileMap::WALL)
+			if (TypeArr[3] != MapLayer::WALL)
 			{
 				target = TilePosArr[3]; break;
 			}
-			if (TypeArr[4] != TileMap::WALL)
+			if (TypeArr[4] != MapLayer::WALL)
 			{
 				target = TilePosArr[4]; break;
 			}
 			break;
 		case DOWNRIGHT:
-			if (TypeArr[7] != TileMap::WALL)
+			if (TypeArr[7] != MapLayer::WALL)
 			{
 				target = TilePosArr[7]; break;
 			}
-			if (TypeArr[1] != TileMap::WALL)
+			if (TypeArr[1] != MapLayer::WALL)
 			{
 				target = TilePosArr[1]; break;
 			}
-			if (TypeArr[0] != TileMap::WALL)
+			if (TypeArr[0] != MapLayer::WALL)
 			{
 				target = TilePosArr[0]; break;
 			}
 			break;
 		case DOWNLEFT:
-			if (TypeArr[1] != TileMap::WALL)
+			if (TypeArr[1] != MapLayer::WALL)
 			{
 				target = TilePosArr[1]; break;
 			}
-			if (TypeArr[3] != TileMap::WALL)
+			if (TypeArr[3] != MapLayer::WALL)
 			{
 				target = TilePosArr[3]; break;
 			}
-			if (TypeArr[2] != TileMap::WALL)
+			if (TypeArr[2] != MapLayer::WALL)
 			{
 				target = TilePosArr[2]; break;
 			}
@@ -561,7 +567,7 @@ void Player::animation(float time)
 {
 	// ����� ����, ����� ��������� 
 	if (going)
-		frame += 0.03 * time; 
+		frame += 0.03f * time;
 	if (frame > 2)    frame = 0;
 	
 	// ����� �� ����� � ������������ ������������
@@ -640,7 +646,7 @@ void Player::pickUp()
 	Item* item = itemLayer->getItem(getMiddlePos());
 	if (item == nullptr)
 		return;
-	if (item->onGround == false)
+	if (!item->onGround)
 		return;
 
 	InventoryCell* cell = inventory->getFirstEmptyCell();
@@ -699,4 +705,13 @@ sf::Vector2f Player::getMiddlePos() const
 
 void Player::setItemLayer(ItemLayer *itemLayer) {
     this->itemLayer = itemLayer;
+}
+
+void Player::onMouseButtonPressed(sf::Event event)
+{
+    if(event.mouseButton.button == sf::Mouse::Left)
+    {
+        sf::Vector2f offset = Application::get().getViewOffSet();
+        goTo(event.mouseButton.x + offset.x, event.mouseButton.y + offset.y);
+    }
 }

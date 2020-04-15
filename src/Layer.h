@@ -13,21 +13,18 @@ protected:
     explicit Layer(LayerStack& stack);
 
     bool visible;
-
     LayerStack& stack;
 
+    //sf::RenderWindow& window;
 public:
-    const sf::RenderWindow& window;
-
     virtual void onUpdate() = 0;
+    // TODO argument isn't required
     virtual void onDraw(sf::RenderWindow& win) = 0;
 
-    // TODO onEvent(Event e);
+    inline virtual void onEvent(sf::Event& event) {};
     // virtual void onEvent() = 0;
-public:
+
     virtual std::string getName() const = 0;
     inline bool isVisible() const        { return visible; };
     inline void setVisible(bool visible_) { this->visible = visible_; };
-
-
 };

@@ -48,6 +48,7 @@ public:
 	virtual void addChild(UIBase* child);
 	virtual void removeChild(UIBase* child);
 
+	inline virtual void onEvent(sf::Event &event) {};
 	// Events
 	virtual void onMouseOver() {};
 	virtual void onMouseButtonPressed() {};

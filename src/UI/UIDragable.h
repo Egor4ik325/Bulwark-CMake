@@ -11,7 +11,7 @@ class UILayer;
 class UIDragable : public UIBase
 {
 protected:
-	UIDragable(UILayer* screenParent);
+	explicit UIDragable(UILayer* screenParent);
 
 	bool dragAble;
 	sf::Vector2f dragOffset;
@@ -23,8 +23,14 @@ public:
 	virtual void onDragBegin();	      
 	virtual void onDrop();		      
 	virtual void onCancelDrag();      
-	virtual bool isDragAllow() const; 
-	inline sf::Vector2f getDragOffSet() { return dragOffset; };
+	//virtual bool isDragAllow() const;
+
+    void onEvent(sf::Event &event) override;
+    virtual bool isDragAllow(const sf::Event& event) const;
+
+public:
+
+    inline sf::Vector2f getDragOffSet() { return dragOffset; };
 };
 
 //class UIDragable

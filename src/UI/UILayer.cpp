@@ -1,4 +1,6 @@
 #include "UILayer.h"
+
+#include "Application.h"
 #include "Global.h"
 #include "LayerStack.h"
 
@@ -19,7 +21,7 @@ UILayer::~UILayer()
 void UILayer::onUpdate()
 {
 	// ������� ��������
-	updateDrag();
+	//updateDrag();
 
 	over = nullptr;
 	//updateOver();
@@ -29,17 +31,18 @@ void UILayer::onUpdate()
 	}
 }
 
-void UILayer::updateDrag()
+void UILayer::updateDrag(sf::Event &event)
 {
 	// ���� ��������� ��������� - (������ ���� ���������)
 	if (drag == nullptr) return;
+	if(event.type != sf::Event::MouseMoved) return;
 
 	// Dragging
-	if (drag->isDragAllow())
+	if (drag->isDragAllow(event))
 	{
 	    // �������� �� ������� ���� ���������� ������� ������ ���� ����� UI � �����,
 	    // � �������� ��������� ����������
-	    sf::Vector2f nextPos = getMouseLocalPos(window) - drag->getDragOffSet();
+	    sf::Vector2f nextPos = GETMOUSELOCAL(Application::get().getWindow()) - drag->getDragOffSet();
 	    drag->setPosition(nextPos);
 	}
 	// Drag end
@@ -77,7 +80,7 @@ UIBase *UILayer::getOver()
 	UIBase* _over = nullptr;
 	for(UIBase* c : controls)
 	{
-		auto mouseLocalPos = getMouseLocalPos(window);;
+		auto mouseLocalPos = GETMOUSELOCAL(Application::get().getWindow());;
 		if(c->getGlobalBounds().contains(mouseLocalPos))
 			_over = c;
 	}
@@ -87,4 +90,14 @@ UIBase *UILayer::getOver()
 
 std::string UILayer::getName() const {
     return "UILayer";
+}
+
+void UILayer::onEvent(sf::Event &event)
+{
+    updateDrag(event);
+
+    for(UIBase* c : controls)
+    {
+        c->onEvent(event);
+    }
 }

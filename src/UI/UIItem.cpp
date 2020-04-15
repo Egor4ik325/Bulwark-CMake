@@ -2,6 +2,7 @@
 #include "InventoryCell.h"
 #include "LayerStack.h"
 #include "UI/UILayer.h"
+#include "Application.h"
 
 UIItem::UIItem(UILayer* screenParent) : UIDragable(screenParent),
     item(Item())
@@ -21,7 +22,7 @@ UIItem::UIItem(Item * item) : UIItem(*item)
 }
 
 UIItem::UIItem(Item item) : UIDragable(nullptr),
-item(item)
+    item(item)
 {
 	dragAble = true;
 }

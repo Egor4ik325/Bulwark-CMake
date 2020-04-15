@@ -1,4 +1,6 @@
 #include "InventoryCell.h"
+
+#include "Application.h"
 #include "UI/UIItem.h"
 #include "Global.h"
 #include "Content.h"
@@ -13,18 +15,26 @@ InventoryCell::InventoryCell(Inventory* inv) : UIDragable(inv->layerParent),
 	layerParent = inv->layerParent;
 	dragAble = false;
 	// ������������� ��������
-	setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+	setSize(sf::Vector2f(Application::get().getTileSize(), Application::get().getTileSize()));
 	setTexture(&Content::invCellTexture, true);
 	setTextureRect(sf::IntRect(0, 0, 16, 16));
 }
 
+void InventoryCell::onEvent(sf::Event &event)
+{
+    UIDragable::onEvent(event);
+
+
+    if (uiItem != nullptr && !uiItem->isDragAllow(event))
+    {
+        // ������� Item ������
+        uiItem->setPosition(getPosition());
+    }
+}
+
 void InventoryCell::onUpdate()
 {
-	if (uiItem != nullptr && !uiItem->isDragAllow())
-	{
-		// ������� Item ������
-		uiItem->setPosition(getPosition());
-	}
+
     UIDragable::onUpdate();
 }
 

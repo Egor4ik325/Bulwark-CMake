@@ -1,7 +1,7 @@
 #include "UIButton.h"
 #include "UILayer.h"
 #include "Global.h"
-#include "DebugRect.h"
+#include "DebugGraphics.h"
 #include <iostream>
 
 UIButton::UIButton(UILayer* screenParent) : UIDragable(screenParent)
@@ -46,7 +46,7 @@ void UIButton::onDraw(sf::RenderWindow &target)
 
     UIDragable::onDraw(target);
 	
-	if (getGlobalBounds().contains(getMouseLocalPos(target)) && isMouseLeft())
+	if (getGlobalBounds().contains(GETMOUSELOCAL(target)) && ISMOUSELEFT)
 		setFillColor(sf::Color::White); 
 	else
 		setFillColor(color);
@@ -78,7 +78,7 @@ void UIButton::drawText(sf::RenderTarget& target)
 	float rectMiddlePosY = getPosition().y + (getSize().y / 2.f);				
 	textPos.y = rectMiddlePosY - (0.5f * sizeRel);													
 																									
-	//DebugRect::AddRect(sf::FloatRect(rectShape.getPosition().x, rectMiddlePosY, 18,18*3),sf::Color::Red);	 
+	//DebugGraphics::AddRect(sf::FloatRect(rectShape.getPosition().x, rectMiddlePosY, 18,18*3),sf::Color::Red);
 
 	text.setPosition(textPos);
 	target.draw(text);

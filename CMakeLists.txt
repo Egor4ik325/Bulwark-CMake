@@ -42,16 +42,16 @@ endif()
 #message("CPP = ${CPP}")
 
 add_executable(
-        Bulwark src/Animation.h src/Bulwark.cpp src/Bulwark.h src/Content.cpp
-        src/Content.h src/DebugRect.cpp src/DebugRect.h src/Effect.cpp src/Effect.h src/Global.cpp
+        Bulwark src/Animation.h src/Application.cpp src/Application.h src/Content.cpp
+        src/Content.h src/DebugGraphics.cpp src/DebugGraphics.h src/Effect.cpp src/Effect.h src/Global.cpp
         src/Global.h src/Inventory.cpp src/Inventory.h src/InventoryCell.cpp src/InventoryCell.h
         src/Item/Item.cpp src/Item/Item.h src/Item/ItemLayer.cpp src/Item/ItemLayer.h src/main.cpp
-        src/Player.cpp src/Player.h src/Map/TileMap.cpp src/Map/TileMap.h src/Map/TinyXML/tinystr.cpp src/Map/TinyXML/tinystr.h
+        src/Player.cpp src/Player.h src/Map/MapLayer.cpp src/Map/MapLayer.h src/Map/TinyXML/tinystr.cpp src/Map/TinyXML/tinystr.h
         src/Map/TinyXML/tinyxml.cpp src/Map/TinyXML/tinyxml.h src/Map/TinyXML/tinyxmlerror.cpp src/Map/TinyXML/tinyxmlparser.cpp src/UI/UIBase.cpp
         src/UI/UIBase.h src/UI/UIButton.cpp src/UI/UIButton.h src/UI/UIDragable.cpp src/UI/UIDragable.h src/LayerStack.cpp
         src/LayerStack.h src/UI/UILayer.cpp src/UI/UILayer.h src/UI/UIWindow.cpp src/UI/UIWindow.h src/UIs.h
         src/UI/UIItem.cpp src/UI/UIItem.h src/Animation.h
-        src/Layer.cpp src/Layer.h)
+        src/Layer.cpp src/Layer.h src/Event.cpp src/Event.h)
 
 # add all .dylib to file LIBRATIES
 file(GLOB LIBRARIES "dependencies/lib/*.2.5.1.dylib")
@@ -63,4 +63,4 @@ target_link_libraries     (Bulwark ${LIBRARIES})
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 # link libraries to the project
-#target_link_libraries(Bulwark sfml-graphics)
+#target_link_libraries(Application sfml-graphics)

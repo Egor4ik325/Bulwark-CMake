@@ -1,12 +1,12 @@
-#include "DebugRect.h"
+#include "DebugGraphics.h"
 
 #include <iostream>
 #include <vector>
 
-bool DebugRect::enabled;
-std::list<sf::RectangleShape> DebugRect::objects;
+bool DebugGraphics::enabled;
+std::list<sf::RectangleShape> DebugGraphics::objects;
 
-void DebugRect::addRect(sf::FloatRect Rect, sf::Color color)
+void DebugGraphics::addRect(sf::FloatRect Rect, sf::Color color)
 {
 	if (!enabled) return;
 	sf::RectangleShape rect;
@@ -21,7 +21,7 @@ void DebugRect::addRect(sf::FloatRect Rect, sf::Color color)
 	objects.push_back(rect);
 }
 
-void DebugRect::draw(sf::RenderTarget & target)
+void DebugGraphics::draw(sf::RenderTarget & target)
 {
 	if (!enabled) return;
 

@@ -1,5 +1,7 @@
 #include "Global.h"
 
+const int TILE_SIZE = 64;
+
 //sf::Vector2f GetOffSet(sf::View view) 
 //{
 //	sf::Vector2f offSet;
